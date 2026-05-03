@@ -104,7 +104,8 @@ class Pipeline:
 
         sbom_path = str(self.results_root / "sboms" / f"{repo.name}_sbom.json")
         vuln_path = str(self.results_root / "vulns" / f"{repo.name}_vuln.json")
-        codeql_path = str(self.reports_root / f"{repo.name}_codeql.json")
+        codeql_sarif = str(self.reports_root / f"{repo.name}_codeql.sarif")
+        codeql_path = str(self.reports_root / f"{repo.name}_codeql_normalized.json")
         cicd_path = str(self.reports_root / f"{repo.name}_cicd.json")
 
         syft_data = run_syft(repo.clone_path, sbom_path)
@@ -116,7 +117,7 @@ class Pipeline:
             result["vulns"] = vuln_path if grype_data else None
             result["vuln_count"] = len(grype_data.get("matches", [])) if grype_data else 0
 
-        codeql_data = run_codeql(repo.clone_path, codeql_path, repo.language)
+        codeql_data = run_codeql(repo.clone_path, codeql_sarif, repo.language)
         result["codeql"] = codeql_path if codeql_data else None
         result["codeql_findings"] = codeql_data.get("total_issues", 0) if codeql_data else 0
 

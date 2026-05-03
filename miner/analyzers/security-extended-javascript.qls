@@ -1,0 +1,8 @@
+# Query suite para análisis de seguridad en JavaScript
+# Importa las queries de seguridad extendida y excluye las de test
+- description: Security extended queries for JavaScript (test excluded)
+- import: codeql-suites/javascript-security-extended.qls
+  from: codeql/javascript-queries
+- exclude:
+    tags:
+      - "*test*"

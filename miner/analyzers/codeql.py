@@ -54,8 +54,14 @@ def _diagnosticar_entorno() -> bool:
 
 
 def _resolver_query_suite(lang: str) -> str:
+    # Buscar suite personalizado del proyecto
+    suite_file = Path(__file__).parent / f"security-extended-{lang}.qls"
+    if suite_file.exists():
+        return str(suite_file)
+
+    # Fallback: buscar security-extended en ~/.codeql/packages/
     codeql_packages = Path.home() / ".codeql" / "packages" / "codeql"
-    suite_pattern = f"{lang}-queries/*/codeql-suites/{lang}-security-and-quality.qls"
+    suite_pattern = f"{lang}-queries/*/codeql-suites/{lang}-security-extended.qls"
     suite_files = list(codeql_packages.glob(suite_pattern))
     if suite_files:
         return str(suite_files[0])
@@ -161,7 +167,6 @@ def run_codeql(repo_path: str, output_path: str, language: str | None = None) ->
             "--format", "sarif-latest",
             "--output", str(output_path),
             "--threads", str(threads),
-            "--no-run-unnecessary-queries",
             "--quiet",
         ]
 
@@ -174,6 +179,11 @@ def run_codeql(repo_path: str, output_path: str, language: str | None = None) ->
         sarif = json.loads(Path(output_path).read_text())
         resultados = _parse_sarif(sarif)
         resultados["sarif_metadata"]["language"] = codeql_lang
+
+        normalized_path = out.with_name(f"{out.stem}_normalized.json")
+        normalized_path.write_text(json.dumps(resultados, indent=2, default=str))
+        logger.info(f"CodeQL: JSON normalizado guardado en {normalized_path}")
+
         logger.info(f"CodeQL: {resultados['total_issues']} findings")
         return resultados
 
