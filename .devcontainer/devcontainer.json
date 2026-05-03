@@ -1,0 +1,68 @@
+{
+    "name": "Security Vulnerability Analysis Pipeline",
+
+    // Imagen base con todas las herramientas de seguridad preinstaladas
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": "."
+    },
+
+    // Volúmenes persistentes para que los datos sobrevivan entre sesiones
+    "mounts": [
+        "source=secpipeline-repos,target=/data/repos,type=volume",
+        "source=secpipeline-results,target=/data/results,type=volume",
+        "source=secpipeline-reports,target=/data/reports,type=volume",
+        "source=secpipeline-pipcache,target=/root/.cache/pip,type=volume",
+        "source=secpipeline-uv-cache,target=/root/.cache/uv,type=volume"
+    ],
+
+    // Características adicionales
+    "features": {
+        "ghcr.io/devcontainers/features/git:1": {},
+        "ghcr.io/devcontainers/features/github-cli:1": {}
+    },
+
+    // Configuración de VS Code
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+                "python.formatting.provider": "black",
+                "editor.formatOnSave": true,
+                "editor.rulers": [100],
+                "notebook.formatOnSave.enabled": true,
+                "jupyter.notebook.defaultKernel": "Python (secpipeline)",
+                "[python]": {
+                    "editor.defaultFormatter": "ms-python.black-formatter",
+                    "editor.codeActionsOnSave": {
+                        "source.organizeImports": true
+                    }
+                }
+            },
+            "extensions": [
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "ms-python.black-formatter",
+                "ms-toolsai.jupyter",
+                "ms-azuretools.vscode-docker",
+                "ms-vscode-remote.remote-containers",
+                "tamasfe.even-better-toml",
+                "redhat.vscode-yaml",
+                "eamodio.gitlens"
+            ]
+        }
+    },
+
+    // Comando post-creación: instalar dependencias Python y kernel Jupyter
+    "postCreateCommand": "uv sync && uv run python -m ipykernel install --user --name secpipeline --display-name 'Python (secpipeline)' && grype db update || true",
+
+    // Puerto para el visualizer (cuando se ejecute con docker-compose)
+    "forwardPorts": [4173, 8888],
+    "portsAttributes": {
+        "4173": { "label": "Visualizer Dashboard", "onAutoForward": "notify" },
+        "8888": { "label": "Jupyter Lab", "onAutoForward": "notify" }
+    },
+
+    "remoteUser": "vscode",
+    "runArgs": ["--name", "secpipeline-dev-container"]
+}

@@ -1,0 +1,82 @@
+# ============================================================
+# Security Vulnerability Analysis Pipeline — .gitignore
+# ============================================================
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# uv
+uv.lock
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+.docker/
+
+# Data (generated)
+data/repos/*
+!data/repos/.gitkeep
+data/results/*
+!data/results/.gitkeep
+data/reports/*
+!data/reports/.gitkeep
+
+# Environment files (contain secrets)
+.env
+!.env.example
+
+# CodeQL databases (generated, large)
+*.codeql/
+codeql-db/
+
+# Temporary files
+*.tmp
+*.log
+*.sarif
+_temp/
+
+# OS security
+secrets/
+credentials/
+
+#opencode 
+.opencode/

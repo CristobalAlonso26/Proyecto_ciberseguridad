@@ -1,0 +1,116 @@
+# ============================================================
+# Security Vulnerability Analysis Pipeline — Docker Compose
+# ============================================================
+# Servicios:
+#   miner      → Extrae repos, ejecuta CodeQL/Syft/Grype
+#   analyzer   → Jupyter Lab para analisis exploratorio
+#   visualizer → Dashboard web de resultados
+#
+# Uso:
+#   docker compose run --rm miner              # Ejecutar miner una vez
+#   docker compose up analyzer                 # Levantar Jupyter Lab
+#   docker compose up visualizer               # Levantar dashboard
+#   docker compose up -d analyzer visualizer   # Ambos en background
+# ============================================================
+
+services:
+
+  # ----------------------------------------------------------
+  # Miner: extraccion y analisis automatico de repositorios
+  # ----------------------------------------------------------
+  miner:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+    working_dir: /workspace
+    environment:
+      # Configuracion del miner
+      GITHUB_TOKEN: ${GITHUB_TOKEN}
+      GITHUB_ORG: ${GITHUB_ORG}
+      # Rutas de datos (compartidas via volumenes)
+      DATA_ROOT: /data
+      REPOS_ROOT: /data/repos
+      RESULTS_ROOT: /data/results
+      REPORTS_ROOT: /data/reports
+      # Configuracion de analisis
+      REPO_LIMIT: ${REPO_LIMIT:-50}
+      REPO_VISIBILITY: ${REPO_VISIBILITY:-public}
+      SKIP_ARCHIVED: ${SKIP_ARCHIVED:-true}
+      CLONE_DEPTH: ${CLONE_DEPTH:-none}
+      CLONE_WORKERS: ${CLONE_WORKERS:-3}
+    volumes:
+      - .:/workspace:cached
+      - repos_data:/data/repos
+      - results_data:/data/results
+      - reports_data:/data/reports
+    restart: "no"
+
+  # ----------------------------------------------------------
+  # Analyzer: Jupyter Lab para analisis exploratorio
+  # ----------------------------------------------------------
+  analyzer:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+    working_dir: /workspace
+    command: >
+      jupyter lab
+      --ip=0.0.0.0
+      --port=8888
+      --no-browser
+      --allow-root
+      --NotebookApp.token=''
+      --notebook-dir=/workspace
+    environment:
+      DATA_ROOT: /data
+      REPOS_ROOT: /data/repos
+      RESULTS_ROOT: /data/results
+      REPORTS_ROOT: /data/reports
+    volumes:
+      - .:/workspace:cached
+      - repos_data:/data/repos
+      - results_data:/data/results
+      - reports_data:/data/reports
+    ports:
+      - "8888:8888"
+    restart: unless-stopped
+
+  # ----------------------------------------------------------
+  # Visualizer: dashboard estatico de resultados
+  # ----------------------------------------------------------
+  visualizer:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+    working_dir: /workspace
+    command: >
+      python -m http.server 4173
+      --directory /workspace/visualizer
+    environment:
+      DATA_ROOT: /data
+      RESULTS_ROOT: /data/results
+    volumes:
+      - .:/workspace:ro
+      - results_data:/data/results:ro
+    ports:
+      - "4173:4173"
+    restart: unless-stopped
+    profiles:
+      - visualizer
+
+# ----------------------------------------------------------
+# Volumenes persistentes compartidos entre servicios
+# ----------------------------------------------------------
+volumes:
+  repos_data:
+    driver: local
+    labels:
+      description: "Repositorios clonados para analisis"
+  results_data:
+    driver: local
+    labels:
+      description: "Resultados JSON de analisis (CodeQL, Syft, Grype)"
+  reports_data:
+    driver: local
+    labels:
+      description: "Reportes SARIF y otros formatos intermedios"
