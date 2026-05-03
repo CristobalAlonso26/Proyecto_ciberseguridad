@@ -1,28 +1,22 @@
 {
     "name": "Security Vulnerability Analysis Pipeline",
 
-    // Imagen base con todas las herramientas de seguridad preinstaladas
     "build": {
         "dockerfile": "Dockerfile",
         "context": "."
     },
 
-    // Volúmenes persistentes para que los datos sobrevivan entre sesiones
+    // Cache de pip y uv entre rebuilds
     "mounts": [
-        "source=secpipeline-repos,target=/data/repos,type=volume",
-        "source=secpipeline-results,target=/data/results,type=volume",
-        "source=secpipeline-reports,target=/data/reports,type=volume",
         "source=secpipeline-pipcache,target=/root/.cache/pip,type=volume",
         "source=secpipeline-uv-cache,target=/root/.cache/uv,type=volume"
     ],
 
-    // Características adicionales
     "features": {
         "ghcr.io/devcontainers/features/git:1": {},
         "ghcr.io/devcontainers/features/github-cli:1": {}
     },
 
-    // Configuración de VS Code
     "customizations": {
         "vscode": {
             "settings": {
@@ -53,10 +47,8 @@
         }
     },
 
-    // Comando post-creación: instalar dependencias Python y kernel Jupyter
     "postCreateCommand": "uv sync && uv run python -m ipykernel install --user --name secpipeline --display-name 'Python (secpipeline)' && grype db update || true",
 
-    // Puerto para el visualizer (cuando se ejecute con docker-compose)
     "forwardPorts": [4173, 8888],
     "portsAttributes": {
         "4173": { "label": "Visualizer Dashboard", "onAutoForward": "notify" },

@@ -44,7 +44,7 @@ RUN rm -f /etc/apt/sources.list.d/yarn.list && \
 # ----------------------------------------------------------
 # 5. Instalar CodeQL CLI
 # ----------------------------------------------------------
-ARG CODEQL_VERSION=2.25.1
+ARG CODEQL_VERSION=2.25.3
 RUN curl -sSfL "https://github.com/github/codeql-cli-binaries/releases/download/v${CODEQL_VERSION}/codeql-linux64.zip" \
     -o /tmp/codeql.zip \
     && unzip -q /tmp/codeql.zip -d /usr/local \
@@ -61,17 +61,12 @@ RUN codeql pack download codeql/python-queries \
     || echo "Nota: Algunos query packs pueden no estar disponibles offline."
 
 # ----------------------------------------------------------
-# 7. Crear directorios de datos
-# ----------------------------------------------------------
-RUN mkdir -p /data/repos /data/results /data/reports
-
-# ----------------------------------------------------------
-# 8. Configurar Git para directorios de repos
+# 7. Configurar Git para directorios de repos
 # ----------------------------------------------------------
 RUN git config --system --add safe.directory '*'
 
 # ----------------------------------------------------------
-# 9. Verificar todas las herramientas instaladas
+# 8. Verificar todas las herramientas instaladas
 # ----------------------------------------------------------
 RUN echo "=== Verificacion de herramientas ===" \
     && echo "Python: $(python3 --version)" \
@@ -85,16 +80,10 @@ RUN echo "=== Verificacion de herramientas ===" \
     && echo "=== Verificacion completa ==="
 
 # ----------------------------------------------------------
-# 10. Variables de entorno
+# 9. Variables de entorno
 # ----------------------------------------------------------
 ENV UV_LINK_MODE=copy
 ENV UV_COMPILE_BYTECODE=1
 ENV PYTHONUNBUFFERED=1
-
-# Directorios de datos por defecto
-ENV DATA_ROOT=/data
-ENV REPOS_ROOT=/data/repos
-ENV RESULTS_ROOT=/data/results
-ENV REPORTS_ROOT=/data/reports
 
 WORKDIR /workspace
