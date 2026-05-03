@@ -93,4 +93,4 @@ yarn-debug.log*
 yarn-error.log*
 
 # Local backups
-data_nodejs_test/
+data_nodejs_test/data/results/.analysis_state.json

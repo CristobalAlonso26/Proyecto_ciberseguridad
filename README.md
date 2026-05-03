@@ -44,8 +44,14 @@ Los resultados se guardan en `data/results/` y `data/reports/`.
 ### 4. Ejecutar Analyzer
 
 ```bash
-python3 analyzer/generate_analysis.py
+uv run python analyzer/generate_analysis.py
 ```
+
+Notas:
+- El Analyzer genera `data/results/analysis.json` en cada ejecución.
+- Si el contenido del análisis no cambia (ignorando `metadata.generated_at`), se omite la ejecución de notebooks.
+- Si cambia, ejecuta en orden `nbs/01_overview.ipynb`, `nbs/02_vulnerability_patterns.ipynb` y `nbs/03_repository_risk_and_conclusions.ipynb`.
+- Si `jupyter` no está disponible en el entorno, se muestra advertencia y **no** se interrumpe la generación de `analysis.json`.
 
 Validación rápida:
 
@@ -91,7 +97,7 @@ Si no quieres instalar las herramientas manualmente, abre el proyecto en VS Code
 # Dentro del contenedor
 uv sync
 uv run python -m miner
-python3 analyzer/generate_analysis.py
+uv run python analyzer/generate_analysis.py
 ./scripts/prepare_visualizer_data.sh
 ```
 
