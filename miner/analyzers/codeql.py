@@ -3,6 +3,7 @@ import logging
 import os
 import shutil
 import subprocess
+import tempfile
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -25,21 +26,92 @@ _CODEQL_SUPPORTED = {"python", "javascript", "java", "csharp", "go", "ruby", "cp
 _CODEQL_NO_BUILD = {"javascript", "python", "ruby"}
 
 
-def run_codeql(repo_path: str, output_path: str, language: str | None = None) -> dict | None:
+def _diagnosticar_entorno() -> bool:
     if not shutil.which("codeql"):
         logger.error("codeql no encontrado en PATH")
-        return None
+        return False
+    if not shutil.which("node"):
+        logger.error("node no encontrado en PATH (requerido por CodeQL)")
+        return False
+    if not shutil.which("npm"):
+        logger.error("npm no encontrado en PATH (requerido por CodeQL)")
+        return False
 
-    codeql_lang = _resolve_language(language, repo_path)
-    if not codeql_lang:
-        return None
+    result = subprocess.run(
+        ["codeql", "--version"],
+        capture_output=True, text=True
+    )
+    logger.info(f"CodeQL version: {result.stdout.strip().splitlines()[0] if result.stdout else 'desconocida'}")
 
-    out = Path(output_path)
-    out.parent.mkdir(parents=True, exist_ok=True)
-    db_path = out.parent / f"{out.stem}-db"
+    codeql_packages = Path.home() / ".codeql" / "packages" / "codeql"
+    if not codeql_packages.exists():
+        logger.warning(f"Directorio de query packs no encontrado: {codeql_packages}")
+    else:
+        packs = list(codeql_packages.glob("*/"))
+        logger.debug(f"Query packs disponibles: {[p.name for p in packs]}")
 
+    return True
+
+
+def _resolver_query_suite(lang: str) -> str:
+    codeql_packages = Path.home() / ".codeql" / "packages" / "codeql"
+    suite_pattern = f"{lang}-queries/*/codeql-suites/{lang}-security-and-quality.qls"
+    suite_files = list(codeql_packages.glob(suite_pattern))
+    if suite_files:
+        return str(suite_files[0])
+    return f"codeql/{lang}-queries"
+
+
+def _parse_sarif(sarif_data: dict) -> dict:
+    resultados = {
+        "total_issues": 0,
+        "issues_by_severity": {"error": 0, "warning": 0, "note": 0},
+        "issues": [],
+        "sarif_metadata": {
+            "tool_name": "CodeQL",
+            "tool_version": "",
+            "language": "",
+        },
+    }
+
+    for run in sarif_data.get("runs", []):
+        tool = run.get("tool", {})
+        driver = tool.get("driver", {})
+        resultados["sarif_metadata"]["tool_version"] = driver.get("version", "")
+
+        for resultado in run.get("results", []):
+            severidad = resultado.get("level", "warning")
+            if severidad not in resultados["issues_by_severity"]:
+                resultados["issues_by_severity"][severidad] = 0
+            resultados["issues_by_severity"][severidad] += 1
+            resultados["total_issues"] += 1
+
+            rule = resultado.get("ruleId", "")
+            rule_name = ""
+            if "message" in resultado and "text" in resultado["message"]:
+                rule_name = resultado["message"]["text"][:100]
+
+            primary_loc = resultado.get("locations", [{}])[0] if resultado.get("locations") else {}
+            phys = primary_loc.get("physicalLocation", {})
+            art = phys.get("artifactLocation", {})
+            region = phys.get("region", {})
+
+            resultados["issues"].append({
+                "rule_id": rule,
+                "rule_name": rule_name,
+                "level": severidad,
+                "message": resultado.get("message", {}).get("text", "")[:200],
+                "file": art.get("uri", ""),
+                "line": region.get("startLine", 0),
+                "column": region.get("startColumn", 0),
+            })
+
+    return resultados
+
+
+def _crear_base_datos(repo_path: str, db_path: str, codeql_lang: str) -> bool:
     create_cmd = [
-        "codeql", "database", "create", str(db_path),
+        "codeql", "database", "create", db_path,
         "--language", codeql_lang,
         "--source-root", repo_path,
         "--overwrite", "--quiet",
@@ -49,30 +121,66 @@ def run_codeql(repo_path: str, output_path: str, language: str | None = None) ->
 
     logger.info(f"CodeQL: creando base de datos ({codeql_lang})...")
     r = subprocess.run(create_cmd, capture_output=True, text=True)
-    if r.returncode != 0:
-        logger.error(f"CodeQL create falló ({codeql_lang}): {r.stderr.strip()[:300]}")
+    if r.returncode == 0:
+        return True
+
+    if codeql_lang == "javascript":
+        logger.warning(f"CodeQL create falló, reintentando con --skip-autobuild...")
+        retry_cmd = create_cmd + ["--skip-autobuild"]
+        r = subprocess.run(retry_cmd, capture_output=True, text=True)
+        if r.returncode == 0:
+            return True
+
+    logger.error(f"CodeQL create falló ({codeql_lang}): {r.stderr.strip()[:300]}")
+    return False
+
+
+def run_codeql(repo_path: str, output_path: str, language: str | None = None) -> dict | None:
+    if not _diagnosticar_entorno():
         return None
 
-    analyze_cmd = [
-        "codeql", "database", "analyze", str(db_path),
-        f"codeql/{codeql_lang}-queries",
-        "--format", "sarif-latest",
-        "--output", str(output_path),
-        "--quiet",
-    ]
-
-    logger.info(f"CodeQL: analizando...")
-    r = subprocess.run(analyze_cmd, capture_output=True, text=True)
-    if r.returncode != 0:
-        logger.error(f"CodeQL analyze falló ({codeql_lang}): {r.stderr.strip()[:300]}")
+    codeql_lang = _resolve_language(language, repo_path)
+    if not codeql_lang:
         return None
 
-    sarif = json.loads(Path(output_path).read_text())
-    results = []
-    for run in sarif.get("runs", []):
-        results.extend(run.get("results", []))
-    logger.info(f"CodeQL: {len(results)} findings")
-    return sarif
+    out = Path(output_path)
+    out.parent.mkdir(parents=True, exist_ok=True)
+
+    db_path = os.path.join(tempfile.gettempdir(), f"codeql-db-{Path(repo_path).name}")
+
+    try:
+        if not _crear_base_datos(repo_path, db_path, codeql_lang):
+            return None
+
+        query_suite = _resolver_query_suite(codeql_lang)
+        threads = os.cpu_count() or 2
+
+        analyze_cmd = [
+            "codeql", "database", "analyze", db_path,
+            query_suite,
+            "--format", "sarif-latest",
+            "--output", str(output_path),
+            "--threads", str(threads),
+            "--no-run-unnecessary-queries",
+            "--quiet",
+        ]
+
+        logger.info(f"CodeQL: analizando con {threads} threads...")
+        r = subprocess.run(analyze_cmd, capture_output=True, text=True)
+        if r.returncode != 0:
+            logger.error(f"CodeQL analyze falló ({codeql_lang}): {r.stderr.strip()[:300]}")
+            return None
+
+        sarif = json.loads(Path(output_path).read_text())
+        resultados = _parse_sarif(sarif)
+        resultados["sarif_metadata"]["language"] = codeql_lang
+        logger.info(f"CodeQL: {resultados['total_issues']} findings")
+        return resultados
+
+    finally:
+        if os.path.exists(db_path):
+            shutil.rmtree(db_path, ignore_errors=True)
+            logger.debug(f"CodeQL: DB eliminada ({db_path})")
 
 
 def _resolve_language(language: str | None, repo_path: str) -> str | None:

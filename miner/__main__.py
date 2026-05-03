@@ -26,11 +26,11 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--org", help="Organización GitHub")
     p.add_argument("--workers", type=int, default=3, help="Workers para clonado (default: 3)")
     p.add_argument("--analysis-workers", type=int, default=2, help="Workers para análisis (default: 2)")
-    p.add_argument("--depth", type=int, help="Profundidad del clone (0=completo)")
     p.add_argument("--visibility", choices=["all", "public", "private", "internal"], default="public")
     p.add_argument("--limit", type=int, default=default_limit, help=f"Máximo de repos (default: {default_limit})")
     p.add_argument("--recent-days", type=int, default=30, help="Días de actividad (default: 30)")
     p.add_argument("--dry-run", action="store_true", help="Solo listar repos")
+    p.add_argument("--keep-repos", action="store_true", help="No eliminar repos clonados después del análisis")
     p.add_argument("--output-json", type=Path, help="Guardar resumen en JSON")
     p.add_argument("-v", "--verbose", action="store_true", help="Logging DEBUG")
     return p.parse_args()
@@ -54,8 +54,6 @@ def run() -> None:
         logger.error("Se requiere GITHUB_ORG")
         sys.exit(1)
 
-    depth = None if args.depth == 0 else args.depth
-
     if args.dry_run:
         from .github_client import GitHubClient
         client = GitHubClient(token)
@@ -74,9 +72,9 @@ def run() -> None:
         visibility=args.visibility,
         limit=args.limit,
         recent_days=args.recent_days,
-        clone_depth=depth,
         clone_workers=args.workers,
         analysis_workers=args.analysis_workers,
+        keep_repos=args.keep_repos,
     )
 
     summary = pipeline.run()
@@ -87,7 +85,7 @@ def run() -> None:
     print(f"  {'repos_encontrados':<22} {summary['repos']}")
     print(f"  {'repos_clonados':<22} {summary['cloned']}")
     for r in summary.get("results", []):
-        print(f"  {r['repo']:<22} deps={r['sbom_components']} vulns={r.get('vuln_count', 0)} codeql={r['codeql_findings']}")
+        print(f"  {r['repo']:<22} deps={r['sbom_components']} vulns={r.get('vuln_count', 0)} codeql={r['codeql_findings']} cicd={r.get('cicd_findings', 0)}")
     print("=" * 55)
 
     if args.output_json:

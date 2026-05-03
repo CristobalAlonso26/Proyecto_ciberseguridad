@@ -8,7 +8,7 @@ from .models import Repository
 logger = logging.getLogger(__name__)
 
 
-def clone_repo(repo: Repository, clone_root: Path, token: str, depth: int | None = None) -> str:
+def clone_repo(repo: Repository, clone_root: Path, token: str) -> str:
     dest = clone_root / repo.org_name / repo.name
     clone_url = _auth_url(repo.clone_url, token)
 
@@ -18,10 +18,7 @@ def clone_repo(repo: Repository, clone_root: Path, token: str, depth: int | None
     else:
         logger.info(f"[{repo.full_name}] Clonando...")
         dest.mkdir(parents=True, exist_ok=True)
-        cmd = ["git", "clone", "--quiet"]
-        if depth is not None:
-            cmd += ["--depth", str(depth)]
-        cmd += [clone_url, str(dest)]
+        cmd = ["git", "clone", "--quiet", "--depth", "1", clone_url, str(dest)]
         _run(cmd)
 
     sha = _run(["git", "-C", str(dest), "rev-parse", "HEAD"]).strip()
