@@ -1,6 +1,12 @@
 # Security Vulnerability Analysis Pipeline
 
-Extrae repos de una organización GitHub, los clona y ejecuta **CodeQL**, **Syft** y **Grype** en paralelo.
+Pipeline E2E para análisis de seguridad de repositorios:
+
+**Miner → Analyzer → Visualizer**
+
+- **Miner**: extrae repos de una organización GitHub, los clona y ejecuta **CodeQL**, **Syft** y **Grype**.
+- **Analyzer**: consolida resultados y genera `data/results/analysis.json` (incluye SBOM, vulnerabilidades, CodeQL y CI/CD).
+- **Visualizer**: dashboard Angular que consume `analysis.json` desde `visualizer/src/assets/analysis.json`.
 
 ## Requisitos
 
@@ -8,7 +14,7 @@ Extrae repos de una organización GitHub, los clona y ejecuta **CodeQL**, **Syft
 - **Git**, **Syft**, **Grype**, **CodeQL CLI** instalados en el PATH (o usar Dev Container)
 - **GitHub Personal Access Token** con scopes `public_repo` y `read:org`
 
-## Inicio rápido
+## Inicio rápido (flujo E2E)
 
 ### 1. Configurar
 
@@ -23,17 +29,43 @@ cp .env.example .env
 uv sync
 ```
 
-### 3. Ejecutar
+### 3. Ejecutar Miner
 
 ```bash
 # Probar sin clonar (solo lista repos)
-python -m miner --dry-run
+uv run python -m miner --dry-run
 
 # Ejecución completa
-python -m miner
+uv run python -m miner
 ```
 
 Los resultados se guardan en `data/results/` y `data/reports/`.
+
+### 4. Ejecutar Analyzer
+
+```bash
+python3 analyzer/generate_analysis.py
+```
+
+Validación rápida:
+
+```bash
+jq '.metadata' data/results/analysis.json
+jq '.cross_repo_analysis' data/results/analysis.json
+```
+
+### 5. Preparar y ejecutar Visualizer
+
+```bash
+./scripts/prepare_visualizer_data.sh
+
+cd visualizer
+npm install
+npm run build
+npm run start
+```
+
+El dashboard queda disponible en `http://localhost:4200/`.
 
 ---
 
@@ -44,7 +76,6 @@ Los resultados se guardan en `data/results/` y `data/reports/`.
 | `--org NAME` | Organización GitHub | `GITHUB_ORG` del .env |
 | `--workers N` | Workers para clonado | `3` |
 | `--analysis-workers N` | Workers para análisis | `2` |
-| `--depth N` | Profundidad del clone (0=completo) | `none` |
 | `--visibility CHOICE` | `all`, `public`, `private`, `internal` | `public` |
 | `--limit N` | Máximo de repos | `50` |
 | `--recent-days N` | Días de actividad | `30` |
@@ -59,14 +90,16 @@ Si no quieres instalar las herramientas manualmente, abre el proyecto en VS Code
 ```bash
 # Dentro del contenedor
 uv sync
-python -m miner
+uv run python -m miner
+python3 analyzer/generate_analysis.py
+./scripts/prepare_visualizer_data.sh
 ```
 
 ## Usar con Docker Compose
 
+```bash
 docker compose run --rm miner
-docker compose up analyzer        # Jupyter Lab en :8888
-docker compose up visualizer      # Dashboard en :4173
+docker compose up visualizer
 ```
 
 ## Estructura
@@ -84,8 +117,14 @@ docker compose up visualizer      # Dashboard en :4173
 │       └── codeql.py        # Análisis estático de código
 ├── data/
 │   ├── repos/               # Repositorios clonados
-│   ├── results/             # Resultados Syft/Grype
-│   └── reports/             # Reportes CodeQL SARIF
+│   ├── results/             # SBOMs, vulns y analysis.json
+│   └── reports/             # Reportes CodeQL SARIF y CI/CD
+├── analyzer/
+│   ├── generate_analysis.py # Genera data/results/analysis.json
+│   └── ...                  # Parsers y agregación
+├── visualizer/              # Dashboard Angular
+├── scripts/
+│   └── prepare_visualizer_data.sh
 ├── docker-compose.yml
 ├── .devcontainer/
 └── pyproject.toml
