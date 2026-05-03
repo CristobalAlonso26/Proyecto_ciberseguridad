@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from analyzer.cicd_parser import normalize_repo_name, parse_cicd
 from analyzer.codeql_parser import parse_codeql
 from analyzer.counters import severity_distribution, top_codeql_files, top_codeql_rules
 from analyzer.grype_parser import parse_grype
@@ -24,6 +25,7 @@ def _build_repository_entry(
     sbom_data: dict[str, Any],
     vulnerabilities: list[dict[str, Any]],
     codeql_issues: list[dict[str, Any]],
+    cicd_data: dict[str, Any],
 ) -> dict[str, Any]:
     total_components = int(sbom_data.get("total_components", 0))
     total_vulns = len(vulnerabilities)
@@ -43,6 +45,7 @@ def _build_repository_entry(
             "top_files": top_codeql_files(codeql_issues),
             "items": codeql_issues,
         },
+        "cicd": cicd_data,
         "metrics": {
             "vulnerability_density": vulnerability_density(total_vulns, total_components),
             "risk_score": risk_score(vulnerabilities, total_codeql),
@@ -54,6 +57,7 @@ def build_analysis(
     sbom_files: list[Path],
     vuln_files: list[Path],
     codeql_files: list[Path],
+    cicd_files: list[Path],
 ) -> dict[str, Any]:
     sbom_by_repo = {
         _repo_name_from_file(path, "_sbom.json"): parse_sbom(load_json_file(path))
@@ -67,8 +71,16 @@ def build_analysis(
         _repo_name_from_file(path, "_codeql.sarif"): parse_codeql(load_json_file(path))
         for path in codeql_files
     }
+    cicd_by_repo: dict[str, dict[str, Any]] = {}
+    for path in cicd_files:
+        data = load_json_file(path)
+        parsed = parse_cicd(data)
+        repo_name = normalize_repo_name(data.get("repo") if isinstance(data, dict) else None)
+        if repo_name == "unknown":
+            repo_name = _repo_name_from_file(path, "_cicd.json")
+        cicd_by_repo[repo_name] = parsed
 
-    all_repos = sorted(set(sbom_by_repo) | set(vulns_by_repo) | set(codeql_by_repo))
+    all_repos = sorted(set(sbom_by_repo) | set(vulns_by_repo) | set(codeql_by_repo) | set(cicd_by_repo))
 
     repositories = []
     for repo in all_repos:
@@ -81,6 +93,10 @@ def build_analysis(
                 ),
                 vulnerabilities=vulns_by_repo.get(repo, []),
                 codeql_issues=codeql_by_repo.get(repo, []),
+                cicd_data=cicd_by_repo.get(
+                    repo,
+                    {"workflows_scanned": 0, "total_findings": 0, "items": []},
+                ),
             )
         )
 
@@ -88,6 +104,14 @@ def build_analysis(
     all_vulnerabilities = [v for repo in repositories for v in repo["vulnerabilities"]["items"]]
     total_vulnerabilities = len(all_vulnerabilities)
     total_codeql_issues = sum(r["codeql"]["total_issues"] for r in repositories)
+    total_cicd_findings = sum(r["cicd"]["total_findings"] for r in repositories)
+    cicd_findings_by_repo = sorted(
+        (
+            {"name": r["name"], "findings": r["cicd"]["total_findings"]}
+            for r in repositories
+        ),
+        key=lambda item: (-item["findings"], item["name"]),
+    )
 
     ranking = sorted(
         (
@@ -102,13 +126,15 @@ def build_analysis(
         "metadata": {
             "generated_at": datetime.now(timezone.utc).isoformat(),
             "repos_analyzed": len(repositories),
-            "data_sources": ["sbom", "grype", "codeql"],
+            "data_sources": ["sbom", "grype", "codeql", "cicd"],
         },
         "repositories": repositories,
         "cross_repo_analysis": {
             "total_components": total_components,
             "total_vulnerabilities": total_vulnerabilities,
             "total_codeql_issues": total_codeql_issues,
+            "total_cicd_findings": total_cicd_findings,
+            "cicd_findings_by_repo": cicd_findings_by_repo,
             "severity_distribution": severity_distribution(all_vulnerabilities),
             "repo_ranking_by_risk": ranking,
         },

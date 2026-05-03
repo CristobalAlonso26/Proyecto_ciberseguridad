@@ -13,7 +13,19 @@ export interface RepositoryAnalysis {
   sbom: SbomSummary;
   vulnerabilities: VulnerabilitySummary;
   codeql: CodeqlSummary;
+  cicd?: CicdSummary;
   metrics: Metrics;
+}
+
+export interface CicdSummary {
+  workflows_scanned: number;
+  total_findings: number;
+  items: CicdItem[];
+}
+
+export interface CicdItem {
+  workflow: string;
+  issue: string;
 }
 
 export interface SbomSummary {
@@ -62,10 +74,16 @@ export interface CrossRepoAnalysis {
   total_components: number;
   total_vulnerabilities: number;
   total_codeql_issues: number;
+  total_cicd_findings?: number;
+  cicd_findings_by_repo?: Record<string, number>;
   severity_distribution: Record<string, number>;
   repo_ranking_by_risk: Array<{ name: string; risk_score: number }>;
 }
 
 export interface VulnerabilityRow extends VulnerabilityItem {
+  repository: string;
+}
+
+export interface CicdRow extends CicdItem {
   repository: string;
 }

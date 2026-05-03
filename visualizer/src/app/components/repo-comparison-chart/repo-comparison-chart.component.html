@@ -8,6 +8,7 @@
           <th>Componentes</th>
           <th>Vulnerabilidades</th>
           <th>Issues CodeQL</th>
+          <th>Hallazgos CI/CD</th>
         </tr>
       </thead>
       <tbody>
@@ -17,6 +18,7 @@
             <td>{{ repo.sbom.total_components }}</td>
             <td>{{ repo.vulnerabilities.total }}</td>
             <td>{{ repo.codeql.total_issues }}</td>
+            <td>{{ repo.cicd?.total_findings ?? 0 }}</td>
           </tr>
         }
       </tbody>

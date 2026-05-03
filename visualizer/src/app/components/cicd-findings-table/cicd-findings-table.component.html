@@ -1,0 +1,28 @@
+<section class="panel">
+  <h3>Hallazgos CI/CD</h3>
+
+  @if (!rows.length) {
+    <p class="empty">Sin hallazgos CI/CD.</p>
+  } @else {
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Repositorio</th>
+            <th>Workflow</th>
+            <th>Hallazgo</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of rows; track item.repository + item.workflow + item.issue) {
+            <tr>
+              <td>{{ item.repository }}</td>
+              <td>{{ item.workflow }}</td>
+              <td>{{ item.issue }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>
