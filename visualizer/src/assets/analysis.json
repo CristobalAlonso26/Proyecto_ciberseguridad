@@ -1,0 +1,948 @@
+{
+  "metadata": {
+    "generated_at": "2026-05-03T19:52:19.444538+00:00",
+    "repos_analyzed": 6,
+    "data_sources": [
+      "sbom",
+      "grype",
+      "codeql",
+      "cicd"
+    ]
+  },
+  "repositories": [
+    {
+      "name": "deepagents",
+      "sbom": {
+        "total_components": 2276,
+        "by_type": {
+          "github-action": 63,
+          "github-action-workflow": 5,
+          "npm": 307,
+          "python": 1901
+        },
+        "by_language": {
+          "unknown": 68,
+          "javascript": 307,
+          "python": 1901
+        }
+      },
+      "vulnerabilities": {
+        "total": 10,
+        "severity_distribution": {
+          "High": 3,
+          "Medium": 4,
+          "Low": 2,
+          "Critical": 1
+        },
+        "items": [
+          {
+            "id": "GHSA-jm6w-m3j8-898g",
+            "severity": "High",
+            "description": "Unauthenticated remote shutdown in nltk.app.wordnet_app",
+            "cvss_score": 7.5,
+            "epss": 0.00026,
+            "cwe": "CWE-306",
+            "artifact": "nltk",
+            "artifact_version": "3.9.3",
+            "artifact_type": "python",
+            "artifact_language": "python",
+            "location": "/libs/evals/uv.lock",
+            "fix_state": "fixed",
+            "fix_available": true,
+            "fix_version": "3.9.4",
+            "risk": 0.019499999999999997
+          },
+          {
+            "id": "GHSA-gfwx-w7gr-fvh7",
+            "severity": "Medium",
+            "description": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting') in nltk",
+            "cvss_score": 6.1,
+            "epss": 0.00017,
+            "cwe": "CWE-79",
+            "artifact": "nltk",
+            "artifact_version": "3.9.3",
+            "artifact_type": "python",
+            "artifact_language": "python",
+            "location": "/libs/evals/uv.lock",
+            "fix_state": "fixed",
+            "fix_available": true,
+            "fix_version": "3.9.4",
+            "risk": 0.009435
+          },
+          {
+            "id": "GHSA-5239-wwwm-4pmq",
+            "severity": "Low",
+            "description": "Pygments has Regular Expression Denial of Service (ReDoS) due to Inefficient Regex for GUID Matching",
+            "cvss_score": 3.3,
+            "epss": 7e-05,
+            "cwe": "CWE-400",
+            "artifact": "pygments",
+            "artifact_version": "2.19.2",
+            "artifact_type": "python",
+            "artifact_language": "python",
+            "location": "/libs/repl/uv.lock",
+            "fix_state": "fixed",
+            "fix_available": true,
+            "fix_version": "2.20.0",
+            "risk": 0.0019599999999999995
+          },
+          {
+            "id": "GHSA-r75f-5x8p-qvmc",
+            "severity": "Critical",
+            "description": "LiteLLM has SQL Injection in Proxy API key verification",
+            "cvss_score": 9.3,
+            "epss": null,
+            "cwe": null,
+            "artifact": "litellm",
+            "artifact_version": "1.83.0",
+            "artifact_type": "python",
+            "artifact_language": "python",
+            "location": "/libs/cli/uv.lock",
+            "fix_state": "fixed",
+            "fix_available": true,
+            "fix_version": "1.83.7",
+            "risk": 0
+          },
+          {
+            "id": "GHSA-v4p8-mg3p-g94g",
+            "severity": "High",
+            "description": "LiteLLM: Authenticated command execution via MCP stdio test endpoints",
+            "cvss_score": 8.7,
+            "epss": null,
+            "cwe": null,
+            "artifact": "litellm",
+            "artifact_version": "1.83.0",
+            "artifact_type": "python",
+            "artifact_language": "python",
+            "location": "/libs/cli/uv.lock",
+            "fix_state": "fixed",
+            "fix_available": true,
+            "fix_version": "1.83.7",
+            "risk": 0
+          },
+          {
+            "id": "GHSA-xqmj-j6mv-4862",
+            "severity": "High",
+            "description": "LiteLLM: Server-Side Template Injection in /prompts/test endpoint",
+            "cvss_score": 8.6,
+            "epss": null,
+            "cwe": null,
+            "artifact": "litellm",
+            "artifact_version": "1.83.0",
+            "artifact_type": "python",
+            "artifact_language": "python",
+            "location": "/libs/cli/uv.lock",
+            "fix_state": "fixed",
+            "fix_available": true,
+            "fix_version": "1.83.7",
+            "risk": 0
+          },
+          {
+            "id": "GHSA-rf74-v2fm-23pw",
+            "severity": "Medium",
+            "description": "Natural Language Toolkit (NLTK) has unbounded recursion in JSONTaggedDecoder.decode_obj() may cause DoS",
+            "cvss_score": 5.1,
+            "epss": null,
+            "cwe": null,
+            "artifact": "nltk",
+            "artifact_version": "3.9.3",
+            "artifact_type": "python",
+            "artifact_language": "python",
+            "location": "/libs/evals/uv.lock",
+            "fix_state": "not-fixed",
+            "fix_available": false,
+            "fix_version": null,
+            "risk": 0
+          },
+          {
+            "id": "GHSA-w5hq-g745-h8pq",
+            "severity": "Medium",
+            "description": "uuid: Missing buffer bounds check in v3/v5/v6 when buf is provided",
+            "cvss_score": 6.3,
+            "epss": null,
+            "cwe": null,
+            "artifact": "uuid",
+            "artifact_version": "11.1.0",
+            "artifact_type": "npm",
+            "artifact_language": "javascript",
+            "location": "/libs/cli/frontend/package-lock.json",
+            "fix_state": "fixed",
+            "fix_available": true,
+            "fix_version": "14.0.0",
+            "risk": 0
+          },
+          {
+            "id": "GHSA-w5hq-g745-h8pq",
+            "severity": "Medium",
+            "description": "uuid: Missing buffer bounds check in v3/v5/v6 when buf is provided",
+            "cvss_score": 6.3,
+            "epss": null,
+            "cwe": null,
+            "artifact": "uuid",
+            "artifact_version": "13.0.0",
+            "artifact_type": "npm",
+            "artifact_language": "javascript",
+            "location": "/libs/cli/frontend/package-lock.json",
+            "fix_state": "fixed",
+            "fix_available": true,
+            "fix_version": "14.0.0",
+            "risk": 0
+          },
+          {
+            "id": "GHSA-vxmw-7h4f-hqxh",
+            "severity": "Low",
+            "description": "PyPI publish GitHub Action vulnerable to injectable expression expansions in action steps",
+            "cvss_score": 0,
+            "epss": null,
+            "cwe": null,
+            "artifact": "pypa/gh-action-pypi-publish",
+            "artifact_version": "cef221092ed1bacb1cc03d23a2d87d1d172e277b",
+            "artifact_type": "github-action",
+            "artifact_language": "",
+            "location": "/.github/workflows/release.yml",
+            "fix_state": "fixed",
+            "fix_available": true,
+            "fix_version": "1.13.0",
+            "risk": 0
+          }
+        ]
+      },
+      "codeql": {
+        "total_issues": 11,
+        "top_rules": [
+          {
+            "value": "py/clear-text-logging-sensitive-data",
+            "count": 5
+          },
+          {
+            "value": "py/incomplete-url-substring-sanitization",
+            "count": 4
+          },
+          {
+            "value": "py/overly-permissive-file",
+            "count": 2
+          }
+        ],
+        "top_files": [
+          {
+            "value": "libs/cli/deepagents_cli/model_config.py",
+            "count": 5
+          },
+          {
+            "value": "libs/cli/tests/unit_tests/test_app.py",
+            "count": 2
+          },
+          {
+            "value": "libs/deepagents/deepagents/backends/filesystem.py",
+            "count": 2
+          },
+          {
+            "value": "libs/deepagents/tests/unit_tests/backends/test_backwards_compat.py",
+            "count": 1
+          },
+          {
+            "value": "libs/cli/tests/unit_tests/tools/test_fetch_url.py",
+            "count": 1
+          }
+        ],
+        "items": [
+          {
+            "rule_id": "py/incomplete-url-substring-sanitization",
+            "message": "The string [https://tavily.com](1) may be at an arbitrary position in the sanitized URL.",
+            "file": "libs/cli/tests/unit_tests/test_app.py",
+            "line": 5405,
+            "column": 49
+          },
+          {
+            "rule_id": "py/incomplete-url-substring-sanitization",
+            "message": "The string [https://tavily.com](1) may be at an arbitrary position in the sanitized URL.",
+            "file": "libs/cli/tests/unit_tests/test_app.py",
+            "line": 6136,
+            "column": 49
+          },
+          {
+            "rule_id": "py/incomplete-url-substring-sanitization",
+            "message": "The string [prod.example.com](1) may be at an arbitrary position in the sanitized URL.",
+            "file": "libs/deepagents/tests/unit_tests/backends/test_backwards_compat.py",
+            "line": 385,
+            "column": 16
+          },
+          {
+            "rule_id": "py/incomplete-url-substring-sanitization",
+            "message": "The string [http://example.com](1) may be at an arbitrary position in the sanitized URL.",
+            "file": "libs/cli/tests/unit_tests/tools/test_fetch_url.py",
+            "line": 23,
+            "column": 12
+          },
+          {
+            "rule_id": "py/clear-text-logging-sensitive-data",
+            "message": "This expression logs [sensitive data (password)](1) as clear text.\nThis expression logs [sensitive data (password)](2) as clear text.\nThis expression logs [sensitive data (password)](3) as clear text.\nThis expression logs [sensitive data (password)](4) as clear text.\nThis expression logs [sensitive data (password)](5) as clear text.\nThis expression logs [sensitive data (password)](6) as clear text.",
+            "file": "libs/cli/deepagents_cli/model_config.py",
+            "line": 63,
+            "column": 21
+          },
+          {
+            "rule_id": "py/clear-text-logging-sensitive-data",
+            "message": "This expression logs [sensitive data (password)](1) as clear text.\nThis expression logs [sensitive data (password)](2) as clear text.\nThis expression logs [sensitive data (password)](3) as clear text.\nThis expression logs [sensitive data (password)](4) as clear text.\nThis expression logs [sensitive data (password)](5) as clear text.\nThis expression logs [sensitive data (password)](6) as clear text.",
+            "file": "libs/cli/deepagents_cli/model_config.py",
+            "line": 61,
+            "column": 21
+          },
+          {
+            "rule_id": "py/clear-text-logging-sensitive-data",
+            "message": "This expression logs [sensitive data (password)](1) as clear text.\nThis expression logs [sensitive data (password)](2) as clear text.\nThis expression logs [sensitive data (password)](3) as clear text.\nThis expression logs [sensitive data (password)](4) as clear text.\nThis expression logs [sensitive data (password)](5) as clear text.\nThis expression logs [sensitive data (password)](6) as clear text.",
+            "file": "libs/cli/deepagents_cli/model_config.py",
+            "line": 62,
+            "column": 21
+          },
+          {
+            "rule_id": "py/clear-text-logging-sensitive-data",
+            "message": "This expression logs [sensitive data (password)](1) as clear text.\nThis expression logs [sensitive data (password)](2) as clear text.\nThis expression logs [sensitive data (password)](3) as clear text.\nThis expression logs [sensitive data (password)](4) as clear text.\nThis expression logs [sensitive data (password)](5) as clear text.\nThis expression logs [sensitive data (password)](6) as clear text.",
+            "file": "libs/cli/deepagents_cli/model_config.py",
+            "line": 66,
+            "column": 59
+          },
+          {
+            "rule_id": "py/clear-text-logging-sensitive-data",
+            "message": "This expression logs [sensitive data (password)](1) as clear text.\nThis expression logs [sensitive data (password)](2) as clear text.\nThis expression logs [sensitive data (password)](3) as clear text.\nThis expression logs [sensitive data (password)](4) as clear text.\nThis expression logs [sensitive data (password)](5) as clear text.\nThis expression logs [sensitive data (password)](6) as clear text.",
+            "file": "libs/cli/deepagents_cli/model_config.py",
+            "line": 66,
+            "column": 53
+          },
+          {
+            "rule_id": "py/overly-permissive-file",
+            "message": "Overly permissive mask in open sets file to world readable.",
+            "file": "libs/deepagents/deepagents/backends/filesystem.py",
+            "line": 440,
+            "column": 18
+          },
+          {
+            "rule_id": "py/overly-permissive-file",
+            "message": "Overly permissive mask in open sets file to world readable.",
+            "file": "libs/deepagents/deepagents/backends/filesystem.py",
+            "line": 780,
+            "column": 22
+          }
+        ]
+      },
+      "cicd": {
+        "workflows_scanned": 27,
+        "total_findings": 2,
+        "items": [
+          {
+            "workflow": "evals.yml",
+            "issue": "Permiso 'contents: write' innecesario"
+          },
+          {
+            "workflow": "release_please_parse_check.yml",
+            "issue": "Job 'parse-check': usa 'npm install' en vez de 'npm ci' (dependencias no deterministas)"
+          }
+        ]
+      },
+      "metrics": {
+        "vulnerability_density": 0.4393673110720563,
+        "risk_score": 23.11
+      }
+    },
+    {
+      "name": "docs",
+      "sbom": {
+        "total_components": 502,
+        "by_type": {
+          "github-action": 52,
+          "github-action-workflow": 3,
+          "npm": 305,
+          "python": 142
+        },
+        "by_language": {
+          "unknown": 55,
+          "javascript": 305,
+          "python": 142
+        }
+      },
+      "vulnerabilities": {
+        "total": 5,
+        "severity_distribution": {
+          "Low": 1,
+          "Medium": 4
+        },
+        "items": [
+          {
+            "id": "GHSA-5239-wwwm-4pmq",
+            "severity": "Low",
+            "description": "Pygments has Regular Expression Denial of Service (ReDoS) due to Inefficient Regex for GUID Matching",
+            "cvss_score": 3.3,
+            "epss": 7e-05,
+            "cwe": "CWE-400",
+            "artifact": "pygments",
+            "artifact_version": "2.19.2",
+            "artifact_type": "python",
+            "artifact_language": "python",
+            "location": "/uv.lock",
+            "fix_state": "fixed",
+            "fix_available": true,
+            "fix_version": "2.20.0",
+            "risk": 0.0019599999999999995
+          },
+          {
+            "id": "GHSA-gh4j-gqv2-49f6",
+            "severity": "Medium",
+            "description": "fast-xml-parser XMLBuilder: XML Comment and CDATA Injection via Unescaped Delimiters",
+            "cvss_score": 6.1,
+            "epss": null,
+            "cwe": null,
+            "artifact": "fast-xml-parser",
+            "artifact_version": "5.5.8",
+            "artifact_type": "npm",
+            "artifact_language": "javascript",
+            "location": "/src/code-samples/package-lock.json",
+            "fix_state": "fixed",
+            "fix_available": true,
+            "fix_version": "5.7.0",
+            "risk": 0
+          },
+          {
+            "id": "GHSA-w5hq-g745-h8pq",
+            "severity": "Medium",
+            "description": "uuid: Missing buffer bounds check in v3/v5/v6 when buf is provided",
+            "cvss_score": 6.3,
+            "epss": null,
+            "cwe": null,
+            "artifact": "uuid",
+            "artifact_version": "10.0.0",
+            "artifact_type": "npm",
+            "artifact_language": "javascript",
+            "location": "/src/code-samples/package-lock.json",
+            "fix_state": "fixed",
+            "fix_available": true,
+            "fix_version": "14.0.0",
+            "risk": 0
+          },
+          {
+            "id": "GHSA-w5hq-g745-h8pq",
+            "severity": "Medium",
+            "description": "uuid: Missing buffer bounds check in v3/v5/v6 when buf is provided",
+            "cvss_score": 6.3,
+            "epss": null,
+            "cwe": null,
+            "artifact": "uuid",
+            "artifact_version": "11.1.0",
+            "artifact_type": "npm",
+            "artifact_language": "javascript",
+            "location": "/src/code-samples/package-lock.json",
+            "fix_state": "fixed",
+            "fix_available": true,
+            "fix_version": "14.0.0",
+            "risk": 0
+          },
+          {
+            "id": "GHSA-w5hq-g745-h8pq",
+            "severity": "Medium",
+            "description": "uuid: Missing buffer bounds check in v3/v5/v6 when buf is provided",
+            "cvss_score": 6.3,
+            "epss": null,
+            "cwe": null,
+            "artifact": "uuid",
+            "artifact_version": "13.0.0",
+            "artifact_type": "npm",
+            "artifact_language": "javascript",
+            "location": "/src/code-samples/package-lock.json",
+            "fix_state": "fixed",
+            "fix_available": true,
+            "fix_version": "14.0.0",
+            "risk": 0
+          }
+        ]
+      },
+      "codeql": {
+        "total_issues": 0,
+        "top_rules": [],
+        "top_files": [],
+        "items": []
+      },
+      "cicd": {
+        "workflows_scanned": 22,
+        "total_findings": 0,
+        "items": []
+      },
+      "metrics": {
+        "vulnerability_density": 0.9960159362549801,
+        "risk_score": 9.0
+      }
+    },
+    {
+      "name": "langchain",
+      "sbom": {
+        "total_components": 2330,
+        "by_type": {
+          "github-action": 57,
+          "github-action-workflow": 6,
+          "python": 2267
+        },
+        "by_language": {
+          "unknown": 63,
+          "python": 2267
+        }
+      },
+      "vulnerabilities": {
+        "total": 1,
+        "severity_distribution": {
+          "Low": 1
+        },
+        "items": [
+          {
+            "id": "GHSA-vxmw-7h4f-hqxh",
+            "severity": "Low",
+            "description": "PyPI publish GitHub Action vulnerable to injectable expression expansions in action steps",
+            "cvss_score": 0,
+            "epss": null,
+            "cwe": null,
+            "artifact": "pypa/gh-action-pypi-publish",
+            "artifact_version": "cef221092ed1bacb1cc03d23a2d87d1d172e277b",
+            "artifact_type": "github-action",
+            "artifact_language": "",
+            "location": "/.github/workflows/_release.yml",
+            "fix_state": "fixed",
+            "fix_available": true,
+            "fix_version": "1.13.0",
+            "risk": 0
+          }
+        ]
+      },
+      "codeql": {
+        "total_issues": 13,
+        "top_rules": [
+          {
+            "value": "py/clear-text-logging-sensitive-data",
+            "count": 8
+          },
+          {
+            "value": "py/incomplete-url-substring-sanitization",
+            "count": 4
+          },
+          {
+            "value": "py/weak-sensitive-data-hashing",
+            "count": 1
+          }
+        ],
+        "top_files": [
+          {
+            "value": "libs/partners/openai/tests/unit_tests/test_secrets.py",
+            "count": 4
+          },
+          {
+            "value": "libs/partners/anthropic/tests/unit_tests/test_chat_models.py",
+            "count": 2
+          },
+          {
+            "value": "libs/partners/fireworks/tests/unit_tests/test_llms.py",
+            "count": 2
+          },
+          {
+            "value": "libs/partners/perplexity/tests/integration_tests/test_chat_models.py",
+            "count": 1
+          },
+          {
+            "value": "libs/core/tests/unit_tests/runnables/test_graph.py",
+            "count": 1
+          },
+          {
+            "value": "libs/partners/perplexity/tests/integration_tests/test_search_api.py",
+            "count": 1
+          },
+          {
+            "value": "libs/core/tests/unit_tests/runnables/test_tracing_interops.py",
+            "count": 1
+          },
+          {
+            "value": "libs/core/langchain_core/indexing/api.py",
+            "count": 1
+          }
+        ],
+        "items": [
+          {
+            "rule_id": "py/incomplete-url-substring-sanitization",
+            "message": "The string [wikipedia.org](1) may be at an arbitrary position in the sanitized URL.",
+            "file": "libs/partners/perplexity/tests/integration_tests/test_chat_models.py",
+            "line": 101,
+            "column": 24
+          },
+          {
+            "rule_id": "py/incomplete-url-substring-sanitization",
+            "message": "The string [https://mermaid.ink](1) may be at an arbitrary position in the sanitized URL.",
+            "file": "libs/core/tests/unit_tests/runnables/test_graph.py",
+            "line": 589,
+            "column": 16
+          },
+          {
+            "rule_id": "py/incomplete-url-substring-sanitization",
+            "message": "The string [wikipedia.org](1) may be at an arbitrary position in the sanitized URL.",
+            "file": "libs/partners/perplexity/tests/integration_tests/test_search_api.py",
+            "line": 32,
+            "column": 20
+          },
+          {
+            "rule_id": "py/incomplete-url-substring-sanitization",
+            "message": "The string [https://api.smith.langchain.com](1) may be at an arbitrary position in the sanitized URL.",
+            "file": "libs/core/tests/unit_tests/runnables/test_tracing_interops.py",
+            "line": 37,
+            "column": 20
+          },
+          {
+            "rule_id": "py/clear-text-logging-sensitive-data",
+            "message": "This expression logs [sensitive data (password)](1) as clear text.",
+            "file": "libs/partners/anthropic/tests/unit_tests/test_chat_models.py",
+            "line": 1332,
+            "column": 11
+          },
+          {
+            "rule_id": "py/clear-text-logging-sensitive-data",
+            "message": "This expression logs [sensitive data (password)](1) as clear text.",
+            "file": "libs/partners/anthropic/tests/unit_tests/test_chat_models.py",
+            "line": 1346,
+            "column": 11
+          },
+          {
+            "rule_id": "py/clear-text-logging-sensitive-data",
+            "message": "This expression logs [sensitive data (password)](1) as clear text.",
+            "file": "libs/partners/fireworks/tests/unit_tests/test_llms.py",
+            "line": 41,
+            "column": 11
+          },
+          {
+            "rule_id": "py/clear-text-logging-sensitive-data",
+            "message": "This expression logs [sensitive data (password)](1) as clear text.",
+            "file": "libs/partners/fireworks/tests/unit_tests/test_llms.py",
+            "line": 57,
+            "column": 11
+          },
+          {
+            "rule_id": "py/clear-text-logging-sensitive-data",
+            "message": "This expression logs [sensitive data (password)](1) as clear text.",
+            "file": "libs/partners/openai/tests/unit_tests/test_secrets.py",
+            "line": 99,
+            "column": 11
+          },
+          {
+            "rule_id": "py/clear-text-logging-sensitive-data",
+            "message": "This expression logs [sensitive data (password)](1) as clear text.",
+            "file": "libs/partners/openai/tests/unit_tests/test_secrets.py",
+            "line": 123,
+            "column": 11
+          },
+          {
+            "rule_id": "py/clear-text-logging-sensitive-data",
+            "message": "This expression logs [sensitive data (password)](1) as clear text.",
+            "file": "libs/partners/openai/tests/unit_tests/test_secrets.py",
+            "line": 165,
+            "column": 11
+          },
+          {
+            "rule_id": "py/clear-text-logging-sensitive-data",
+            "message": "This expression logs [sensitive data (password)](1) as clear text.",
+            "file": "libs/partners/openai/tests/unit_tests/test_secrets.py",
+            "line": 177,
+            "column": 11
+          },
+          {
+            "rule_id": "py/weak-sensitive-data-hashing",
+            "message": "[Sensitive data (id)](1) is used in a hashing algorithm (SHA1) that is insecure.",
+            "file": "libs/core/langchain_core/indexing/api.py",
+            "line": 163,
+            "column": 31
+          }
+        ]
+      },
+      "cicd": {
+        "workflows_scanned": 22,
+        "total_findings": 2,
+        "items": [
+          {
+            "workflow": "_refresh_model_profiles.yml",
+            "issue": "Permiso 'contents: write' innecesario"
+          },
+          {
+            "workflow": "refresh_model_profiles.yml",
+            "issue": "Permiso 'contents: write' innecesario"
+          }
+        ]
+      },
+      "metrics": {
+        "vulnerability_density": 0.04291845493562232,
+        "risk_score": 1.13
+      }
+    },
+    {
+      "name": "langsmith-go",
+      "sbom": {
+        "total_components": 31,
+        "by_type": {
+          "github-action": 3,
+          "go-module": 28
+        },
+        "by_language": {
+          "unknown": 3,
+          "go": 28
+        }
+      },
+      "vulnerabilities": {
+        "total": 0,
+        "severity_distribution": {},
+        "items": []
+      },
+      "codeql": {
+        "total_issues": 0,
+        "top_rules": [],
+        "top_files": [],
+        "items": []
+      },
+      "cicd": {
+        "workflows_scanned": 1,
+        "total_findings": 0,
+        "items": []
+      },
+      "metrics": {
+        "vulnerability_density": 0.0,
+        "risk_score": 0.0
+      }
+    },
+    {
+      "name": "langsmith-java",
+      "sbom": {
+        "total_components": 14,
+        "by_type": {
+          "github-action": 13,
+          "java-archive": 1
+        },
+        "by_language": {
+          "unknown": 13,
+          "java": 1
+        }
+      },
+      "vulnerabilities": {
+        "total": 2,
+        "severity_distribution": {
+          "High": 2
+        },
+        "items": [
+          {
+            "id": "GHSA-h3qr-39j9-4r5v",
+            "severity": "High",
+            "description": "Data written to GitHub Actions Cache may expose secrets",
+            "cvss_score": 7.6,
+            "epss": 0.00265,
+            "cwe": "CWE-200",
+            "artifact": "gradle/gradle-build-action",
+            "artifact_version": "ac2d340dc04d9e1113182899e983b5400c17cda1",
+            "artifact_type": "github-action",
+            "artifact_language": "",
+            "location": "/.github/workflows/ci.yml",
+            "fix_state": "fixed",
+            "fix_available": true,
+            "fix_version": "2.4.2",
+            "risk": 0.200075
+          },
+          {
+            "id": "GHSA-h3qr-39j9-4r5v",
+            "severity": "High",
+            "description": "Data written to GitHub Actions Cache may expose secrets",
+            "cvss_score": 7.6,
+            "epss": 0.00265,
+            "cwe": "CWE-200",
+            "artifact": "gradle/gradle-build-action",
+            "artifact_version": "ac2d340dc04d9e1113182899e983b5400c17cda1",
+            "artifact_type": "github-action",
+            "artifact_language": "",
+            "location": "/.github/workflows/publish-sonatype.yml",
+            "fix_state": "fixed",
+            "fix_available": true,
+            "fix_version": "2.4.2",
+            "risk": 0.200075
+          }
+        ]
+      },
+      "codeql": {
+        "total_issues": 0,
+        "top_rules": [],
+        "top_files": [],
+        "items": []
+      },
+      "cicd": {
+        "workflows_scanned": 4,
+        "total_findings": 0,
+        "items": []
+      },
+      "metrics": {
+        "vulnerability_density": 14.285714285714285,
+        "risk_score": 6.0
+      }
+    },
+    {
+      "name": "streaming-cookbook",
+      "sbom": {
+        "total_components": 899,
+        "by_type": {
+          "npm": 899
+        },
+        "by_language": {
+          "javascript": 899
+        }
+      },
+      "vulnerabilities": {
+        "total": 4,
+        "severity_distribution": {
+          "Medium": 4
+        },
+        "items": [
+          {
+            "id": "GHSA-p7fg-763f-g4gf",
+            "severity": "Medium",
+            "description": "Claude SDK for TypeScript has Insecure Default File Permissions in Local Filesystem Memory Tool",
+            "cvss_score": 4.8,
+            "epss": null,
+            "cwe": null,
+            "artifact": "@anthropic-ai/sdk",
+            "artifact_version": "0.90.0",
+            "artifact_type": "npm",
+            "artifact_language": "javascript",
+            "location": "/typescript/pnpm-lock.yaml",
+            "fix_state": "fixed",
+            "fix_available": true,
+            "fix_version": "0.91.1",
+            "risk": 0
+          },
+          {
+            "id": "GHSA-w5hq-g745-h8pq",
+            "severity": "Medium",
+            "description": "uuid: Missing buffer bounds check in v3/v5/v6 when buf is provided",
+            "cvss_score": 6.3,
+            "epss": null,
+            "cwe": null,
+            "artifact": "uuid",
+            "artifact_version": "10.0.0",
+            "artifact_type": "npm",
+            "artifact_language": "javascript",
+            "location": "/typescript/pnpm-lock.yaml",
+            "fix_state": "fixed",
+            "fix_available": true,
+            "fix_version": "14.0.0",
+            "risk": 0
+          },
+          {
+            "id": "GHSA-w5hq-g745-h8pq",
+            "severity": "Medium",
+            "description": "uuid: Missing buffer bounds check in v3/v5/v6 when buf is provided",
+            "cvss_score": 6.3,
+            "epss": null,
+            "cwe": null,
+            "artifact": "uuid",
+            "artifact_version": "11.1.1",
+            "artifact_type": "npm",
+            "artifact_language": "javascript",
+            "location": "/typescript/pnpm-lock.yaml",
+            "fix_state": "fixed",
+            "fix_available": true,
+            "fix_version": "14.0.0",
+            "risk": 0
+          },
+          {
+            "id": "GHSA-w5hq-g745-h8pq",
+            "severity": "Medium",
+            "description": "uuid: Missing buffer bounds check in v3/v5/v6 when buf is provided",
+            "cvss_score": 6.3,
+            "epss": null,
+            "cwe": null,
+            "artifact": "uuid",
+            "artifact_version": "13.0.1",
+            "artifact_type": "npm",
+            "artifact_language": "javascript",
+            "location": "/typescript/pnpm-lock.yaml",
+            "fix_state": "fixed",
+            "fix_available": true,
+            "fix_version": "14.0.0",
+            "risk": 0
+          }
+        ]
+      },
+      "codeql": {
+        "total_issues": 0,
+        "top_rules": [],
+        "top_files": [],
+        "items": []
+      },
+      "cicd": {
+        "workflows_scanned": 0,
+        "total_findings": 0,
+        "items": []
+      },
+      "metrics": {
+        "vulnerability_density": 0.44493882091212456,
+        "risk_score": 8.0
+      }
+    }
+  ],
+  "cross_repo_analysis": {
+    "total_components": 6052,
+    "total_vulnerabilities": 22,
+    "total_codeql_issues": 24,
+    "total_cicd_findings": 4,
+    "cicd_findings_by_repo": [
+      {
+        "name": "deepagents",
+        "findings": 2
+      },
+      {
+        "name": "langchain",
+        "findings": 2
+      },
+      {
+        "name": "docs",
+        "findings": 0
+      },
+      {
+        "name": "langsmith-go",
+        "findings": 0
+      },
+      {
+        "name": "langsmith-java",
+        "findings": 0
+      },
+      {
+        "name": "streaming-cookbook",
+        "findings": 0
+      }
+    ],
+    "severity_distribution": {
+      "High": 5,
+      "Medium": 12,
+      "Low": 4,
+      "Critical": 1
+    },
+    "repo_ranking_by_risk": [
+      {
+        "name": "deepagents",
+        "risk_score": 23.11
+      },
+      {
+        "name": "docs",
+        "risk_score": 9.0
+      },
+      {
+        "name": "streaming-cookbook",
+        "risk_score": 8.0
+      },
+      {
+        "name": "langsmith-java",
+        "risk_score": 6.0
+      },
+      {
+        "name": "langchain",
+        "risk_score": 1.13
+      },
+      {
+        "name": "langsmith-go",
+        "risk_score": 0.0
+      }
+    ]
+  }
+}

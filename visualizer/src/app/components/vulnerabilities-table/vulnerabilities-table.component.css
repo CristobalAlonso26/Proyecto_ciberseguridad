@@ -1,0 +1,49 @@
+.panel {
+  background: #111827;
+  border: 1px solid #374151;
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.filters {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #d1d5db;
+}
+
+select {
+  background: #0f172a;
+  color: #f8fafc;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  padding: 6px;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+th, td {
+  border-bottom: 1px solid #374151;
+  padding: 8px;
+  text-align: left;
+  vertical-align: top;
+}
+
+th { color: #9ca3af; }
+td { color: #e5e7eb; }
+
+.empty { color: #93c5fd; }

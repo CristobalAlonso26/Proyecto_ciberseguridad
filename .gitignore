@@ -80,4 +80,17 @@ credentials/
 
 #opencode 
 .opencode/
+ANALISIS_PROYECTO.md
+PROYECTO_CIBERSEGURIDAD_CONTEXTO_Y_PLAN.md
 AGENTS.md
+
+# Node / Angular
+node_modules/
+.angular/
+dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local backups
+data_nodejs_test/

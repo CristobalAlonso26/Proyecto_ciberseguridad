@@ -1,0 +1,27 @@
+<main class="container">
+  <header>
+    <h1>Cybersecurity Analysis Dashboard</h1>
+    <p>Fuente: <code>assets/analysis.json</code></p>
+  </header>
+
+  @if (loading) {
+    <section class="state loading">Cargando análisis...</section>
+  } @else if (error) {
+    <section class="state error">{{ error }}</section>
+  } @else if (isEmpty) {
+    <section class="state empty">No hay datos de análisis disponibles.</section>
+  } @else {
+    <app-kpi-cards [cards]="kpis"></app-kpi-cards>
+
+    <section class="grid-2">
+      <app-severity-chart [distribution]="analysis!.cross_repo_analysis.severity_distribution"></app-severity-chart>
+      <app-repo-risk-ranking [ranking]="analysis!.cross_repo_analysis.repo_ranking_by_risk"></app-repo-risk-ranking>
+    </section>
+
+    <app-repo-comparison-chart [repositories]="analysis!.repositories"></app-repo-comparison-chart>
+
+    <app-cicd-findings-table [rows]="cicdRows"></app-cicd-findings-table>
+
+    <app-vulnerabilities-table [rows]="vulnerabilityRows"></app-vulnerabilities-table>
+  }
+</main>

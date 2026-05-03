@@ -1,0 +1,33 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  display: grid;
+  gap: 16px;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+header p {
+  margin-top: 6px;
+  color: #9ca3af;
+}
+
+.state {
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid;
+}
+
+.loading { border-color: #3b82f6; color: #bfdbfe; }
+.error { border-color: #ef4444; color: #fecaca; }
+.empty { border-color: #6b7280; color: #d1d5db; }
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+}

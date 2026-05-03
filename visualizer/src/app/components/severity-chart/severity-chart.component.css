@@ -1,0 +1,37 @@
+.panel {
+  background: #111827;
+  border: 1px solid #374151;
+  border-radius: 10px;
+  padding: 14px;
+}
+
+h3 {
+  margin-top: 0;
+  font-size: 1rem;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 80px 1fr 40px;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.bar-wrap {
+  height: 14px;
+  border-radius: 999px;
+  background: #1f2937;
+  overflow: hidden;
+}
+
+.bar {
+  height: 100%;
+}
+
+.critical { background: #dc2626; }
+.high { background: #ea580c; }
+.medium { background: #d97706; }
+.low { background: #16a34a; }
+
+.name, .value { color: #d1d5db; }
