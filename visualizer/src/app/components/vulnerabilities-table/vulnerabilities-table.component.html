@@ -1,0 +1,64 @@
+<section class="panel">
+  <h3>Vulnerabilidades principales</h3>
+
+  <div class="filters">
+    <label>
+      Repositorio
+      <select [(ngModel)]="selectedRepository">
+        <option value="all">Todos</option>
+        @for (repo of repositories; track repo) {
+          <option [value]="repo">{{ repo }}</option>
+        }
+      </select>
+    </label>
+
+    <label>
+      Severidad
+      <select [(ngModel)]="selectedSeverity">
+        <option value="all">Todas</option>
+        @for (severity of severities; track severity) {
+          <option [value]="severity">{{ severity }}</option>
+        }
+      </select>
+    </label>
+  </div>
+
+  @if (!rows.length) {
+    <p class="empty">No hay vulnerabilidades para mostrar.</p>
+  } @else if (!filteredRows.length) {
+    <p class="empty">No hay vulnerabilidades con estos filtros.</p>
+  } @else {
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Repo</th>
+            <th>ID</th>
+            <th>Severity</th>
+            <th>Artifact</th>
+            <th>Version</th>
+            <th>CWE</th>
+            <th>Fix</th>
+            <th>Fix Version</th>
+            <th>Location</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of filteredRows; track item.repository + item.id + item.location) {
+            <tr>
+              <td>{{ item.repository }}</td>
+              <td>{{ item.id }}</td>
+              <td>{{ item.severity }}</td>
+              <td>{{ item.artifact }}</td>
+              <td>{{ item.artifact_version }}</td>
+              <td>{{ item.cwe || '-' }}</td>
+              <td>{{ item.fix_available ? 'Sí' : 'No' }}</td>
+              <td>{{ item.fix_version || '-' }}</td>
+              <td>{{ item.location || '-' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

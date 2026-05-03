@@ -1,0 +1,11 @@
+<section class="panel">
+  <h3>Ranking de repositorios por riesgo</h3>
+  <ol>
+    @for (repo of ranking; track repo.name) {
+      <li>
+        <span>{{ repo.name }}</span>
+        <strong>{{ repo.risk_score | number: '1.0-2' }}</strong>
+      </li>
+    }
+  </ol>
+</section>

@@ -1,0 +1,8 @@
+<section class="kpi-grid">
+  @for (card of cards; track card.label) {
+    <article class="kpi-card">
+      <p class="kpi-label">{{ card.label }}</p>
+      <p class="kpi-value">{{ card.value }}</p>
+    </article>
+  }
+</section>
