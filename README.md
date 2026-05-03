@@ -64,7 +64,6 @@ python -m miner
 
 ## Usar con Docker Compose
 
-```bash
 docker compose run --rm miner
 docker compose up analyzer        # Jupyter Lab en :8888
 docker compose up visualizer      # Dashboard en :4173
