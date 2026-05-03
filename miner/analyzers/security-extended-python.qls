@@ -1,0 +1,8 @@
+# Query suite para análisis de seguridad en Python
+# Importa las queries de seguridad extendida y excluye las de test
+- description: Security extended queries for Python (test excluded)
+- import: codeql-suites/python-security-extended.qls
+  from: codeql/python-queries
+- exclude:
+    tags:
+      - "*test*"

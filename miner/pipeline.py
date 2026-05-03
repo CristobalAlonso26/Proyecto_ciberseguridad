@@ -1,10 +1,12 @@
 import json
 import logging
+import shutil
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 from .clone import clone_repo
+from .analyzers.cicd import run_cicd_scan
 from .analyzers.codeql import run_codeql
 from .analyzers.grype import run_grype
 from .analyzers.syft import run_syft
@@ -25,9 +27,9 @@ class Pipeline:
         visibility: str = "public",
         limit: int = 50,
         recent_days: int = 30,
-        clone_depth: int | None = None,
         clone_workers: int = 3,
         analysis_workers: int = 2,
+        keep_repos: bool = False,
     ) -> None:
         self.client = GitHubClient(token)
         self._token = token
@@ -38,9 +40,9 @@ class Pipeline:
         self.visibility = visibility
         self.limit = limit
         self.recent_days = recent_days
-        self.clone_depth = clone_depth
         self.clone_workers = clone_workers
         self.analysis_workers = analysis_workers
+        self.keep_repos = keep_repos
 
     def run(self) -> dict:
         logger.info(f"Buscando repos de '{self.org}'...")
@@ -56,13 +58,17 @@ class Pipeline:
         logger.info(f"{len(cloned)} repos clonados")
 
         results = self._analyze_repos(cloned)
+
+        if not self.keep_repos:
+            self._cleanup_repos(cloned)
+
         return {"repos": len(repos), "cloned": len(cloned), "results": results}
 
     def _clone_repos(self, repos: list[Repository]) -> list[Repository]:
         cloned = []
         with ThreadPoolExecutor(max_workers=self.clone_workers) as pool:
             futures = {
-                pool.submit(clone_repo, r, self.clone_root, self._token, self.clone_depth): r
+                pool.submit(clone_repo, r, self.clone_root, self._token): r
                 for r in repos
             }
             for f in as_completed(futures):
@@ -98,7 +104,9 @@ class Pipeline:
 
         sbom_path = str(self.results_root / "sboms" / f"{repo.name}_sbom.json")
         vuln_path = str(self.results_root / "vulns" / f"{repo.name}_vuln.json")
-        codeql_path = str(self.reports_root / f"{repo.name}_codeql.sarif")
+        codeql_sarif = str(self.reports_root / f"{repo.name}_codeql.sarif")
+        codeql_path = str(self.reports_root / f"{repo.name}_codeql_normalized.json")
+        cicd_path = str(self.reports_root / f"{repo.name}_cicd.json")
 
         syft_data = run_syft(repo.clone_path, sbom_path)
         result["sbom"] = sbom_path if syft_data else None
@@ -109,17 +117,29 @@ class Pipeline:
             result["vulns"] = vuln_path if grype_data else None
             result["vuln_count"] = len(grype_data.get("matches", [])) if grype_data else 0
 
-        codeql_data = run_codeql(repo.clone_path, codeql_path, repo.language)
+        codeql_data = run_codeql(repo.clone_path, codeql_sarif, repo.language)
         result["codeql"] = codeql_path if codeql_data else None
-        result["codeql_findings"] = 0
-        if codeql_data:
-            for run in codeql_data.get("runs", []):
-                result["codeql_findings"] += len(run.get("results", []))
+        result["codeql_findings"] = codeql_data.get("total_issues", 0) if codeql_data else 0
+
+        cicd_data = run_cicd_scan(repo.clone_path, repo.full_name)
+        result["cicd"] = cicd_path
+        result["cicd_findings"] = sum(len(f["issues"]) for f in cicd_data.get("findings", []))
+        Path(cicd_path).parent.mkdir(parents=True, exist_ok=True)
+        Path(cicd_path).write_text(json.dumps(cicd_data, indent=2, default=str))
 
         result["duration_s"] = round(time.time() - t0, 1)
         logger.info(
             f"[{repo.full_name}] completado en {result['duration_s']}s: "
             f"{result['sbom_components']} deps, {result.get('vuln_count', 0)} vulns, "
-            f"{result['codeql_findings']} codeql"
+            f"{result['codeql_findings']} codeql, {result['cicd_findings']} cicd"
         )
         return result
+
+    def _cleanup_repos(self, repos: list[Repository]) -> None:
+        for repo in repos:
+            if repo.clone_path and Path(repo.clone_path).exists():
+                try:
+                    shutil.rmtree(repo.clone_path)
+                    logger.debug(f"[{repo.full_name}] Repo clonado eliminado")
+                except Exception as e:
+                    logger.warning(f"[{repo.full_name}] Error eliminando repo: {e}")
