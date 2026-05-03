@@ -1,0 +1,25 @@
+<section class="panel">
+  <h3>Comparación por repositorio</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Repositorio</th>
+          <th>Componentes</th>
+          <th>Vulnerabilidades</th>
+          <th>Issues CodeQL</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (repo of repositories; track repo.name) {
+          <tr>
+            <td>{{ repo.name }}</td>
+            <td>{{ repo.sbom.total_components }}</td>
+            <td>{{ repo.vulnerabilities.total }}</td>
+            <td>{{ repo.codeql.total_issues }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

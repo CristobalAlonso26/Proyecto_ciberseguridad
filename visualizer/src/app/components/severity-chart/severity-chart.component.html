@@ -1,0 +1,12 @@
+<section class="panel">
+  <h3>Distribución por severidad</h3>
+  @for (entry of entries; track entry.key) {
+    <div class="row">
+      <span class="name">{{ entry.key }}</span>
+      <div class="bar-wrap">
+        <div class="bar" [style.width]="width(entry.value)" [class]="'bar ' + entry.key.toLowerCase()"></div>
+      </div>
+      <span class="value">{{ entry.value }}</span>
+    </div>
+  }
+</section>
