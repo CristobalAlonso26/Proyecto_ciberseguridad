@@ -69,10 +69,8 @@ services:
     command: >
       bash -c "
         npm install &&
-        if [ ! -f src/assets/analysis.json ]; then
-          echo 'Copying analysis.json...' &&
-          bash /workspace/scripts/prepare_visualizer_data.sh;
-        fi &&
+        echo 'Syncing analysis.json to visualizer assets...' &&
+        bash /workspace/scripts/prepare_visualizer_data.sh &&
         npx ng serve --host 0.0.0.0 --port 4200
       "
     volumes:
