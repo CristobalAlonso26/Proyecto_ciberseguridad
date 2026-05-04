@@ -11,17 +11,23 @@
   } @else if (isEmpty) {
     <section class="state empty">No hay datos de análisis disponibles.</section>
   } @else {
+    <app-executive-insights [insights]="executiveInsights"></app-executive-insights>
     <app-kpi-cards [cards]="kpis"></app-kpi-cards>
+    <app-validation-status [validation]="validation"></app-validation-status>
 
     <section class="grid-2">
       <app-severity-chart [distribution]="analysis!.cross_repo_analysis.severity_distribution"></app-severity-chart>
-      <app-repo-risk-ranking [ranking]="analysis!.cross_repo_analysis.repo_ranking_by_risk"></app-repo-risk-ranking>
+      <app-repo-risk-ranking [ranking]="normalizedRiskRanking"></app-repo-risk-ranking>
     </section>
 
+    <section class="grid-2">
+      <app-codeql-level-summary [byLevel]="codeqlByLevel"></app-codeql-level-summary>
+      <app-cwe-ranking [ranking]="cweRanking"></app-cwe-ranking>
+    </section>
+
+    <app-artifact-type-heatmap [repositories]="analysis!.repositories"></app-artifact-type-heatmap>
     <app-repo-comparison-chart [repositories]="analysis!.repositories"></app-repo-comparison-chart>
-
     <app-cicd-findings-table [rows]="cicdRows"></app-cicd-findings-table>
-
     <app-vulnerabilities-table [rows]="vulnerabilityRows"></app-vulnerabilities-table>
   }
 </main>

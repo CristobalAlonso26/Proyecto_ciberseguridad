@@ -1,0 +1,22 @@
+.panel {
+  background: #111827;
+  border: 1px solid #374151;
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.insights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.insight-card {
+  border: 1px solid #374151;
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.label { margin: 0; color: #9ca3af; font-size: 0.85rem; }
+.value { margin: 4px 0 0; color: #f3f4f6; font-weight: 700; }
+.empty { color: #d1d5db; }

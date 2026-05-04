@@ -4,7 +4,7 @@
     @for (repo of ranking; track repo.name) {
       <li>
         <span>{{ repo.name }}</span>
-        <strong>{{ repo.risk_score | number: '1.0-2' }}</strong>
+        <strong>{{ repo.risk_score | number: '1.0-2' }} / 10</strong>
       </li>
     }
   </ol>

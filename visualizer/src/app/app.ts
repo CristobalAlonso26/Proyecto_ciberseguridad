@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Analysis, CicdRow, VulnerabilityRow } from './models/analysis.model';
+import { Analysis, CicdRow, ValidationMetadata, VulnerabilityRow } from './models/analysis.model';
 import { AnalysisDataService } from './services/analysis-data.service';
 import { KpiCardsComponent } from './components/kpi-cards/kpi-cards.component';
 import { SeverityChartComponent } from './components/severity-chart/severity-chart.component';
@@ -8,6 +8,11 @@ import { RepoRiskRankingComponent } from './components/repo-risk-ranking/repo-ri
 import { RepoComparisonChartComponent } from './components/repo-comparison-chart/repo-comparison-chart.component';
 import { VulnerabilitiesTableComponent } from './components/vulnerabilities-table/vulnerabilities-table.component';
 import { CicdFindingsTableComponent } from './components/cicd-findings-table/cicd-findings-table.component';
+import { ValidationStatusComponent } from './components/validation-status/validation-status.component';
+import { CodeqlLevelSummaryComponent } from './components/codeql-level-summary/codeql-level-summary.component';
+import { CweRankingComponent } from './components/cwe-ranking/cwe-ranking.component';
+import { ArtifactTypeHeatmapComponent } from './components/artifact-type-heatmap/artifact-type-heatmap.component';
+import { ExecutiveInsightsComponent } from './components/executive-insights/executive-insights.component';
 
 @Component({
   selector: 'app-root',
@@ -20,6 +25,11 @@ import { CicdFindingsTableComponent } from './components/cicd-findings-table/cic
     RepoComparisonChartComponent,
     VulnerabilitiesTableComponent,
     CicdFindingsTableComponent,
+    ValidationStatusComponent,
+    CodeqlLevelSummaryComponent,
+    CweRankingComponent,
+    ArtifactTypeHeatmapComponent,
+    ExecutiveInsightsComponent,
   ],
   templateUrl: './app.html',
   styleUrl: './app.css'
@@ -61,8 +71,14 @@ export class App implements OnInit {
       { label: 'Total vulnerabilidades', value: this.analysis.cross_repo_analysis.total_vulnerabilities },
       { label: 'Issues CodeQL', value: this.analysis.cross_repo_analysis.total_codeql_issues },
       { label: 'Hallazgos CI/CD', value: this.totalCicdFindings },
+      { label: 'Fixes disponibles', value: this.totalFixesAvailable },
       { label: 'Risk score promedio', value: avgRisk.toFixed(2) },
     ];
+  }
+
+  get totalFixesAvailable(): number {
+    if (!this.analysis) return 0;
+    return this.analysis.repositories.reduce((acc, repo) => acc + (repo.vulnerabilities.with_fix_available ?? 0), 0);
   }
 
   get totalCicdFindings(): number {
@@ -90,5 +106,50 @@ export class App implements OnInit {
         repository: repo.name,
       }))
     );
+  }
+
+  get validation(): ValidationMetadata {
+    return this.analysis?.metadata.validation ?? { warnings: [], invalid_files: [] };
+  }
+
+  get codeqlByLevel(): Record<string, number> {
+    if (!this.analysis) return {};
+    return this.analysis.repositories.reduce<Record<string, number>>((acc, repo) => {
+      const byLevel = repo.codeql.by_level ?? {};
+      Object.entries(byLevel).forEach(([level, count]) => {
+        acc[level] = (acc[level] ?? 0) + count;
+      });
+      return acc;
+    }, {});
+  }
+
+  get cweRanking(): Array<{ cwe: string; count: number }> {
+    return this.analysis?.cross_repo_analysis.common_weakness_ranking ?? [];
+  }
+
+  get normalizedRiskRanking(): Array<{ name: string; risk_score: number }> {
+    if (!this.analysis) return [];
+    return [...this.analysis.repositories]
+      .sort((a, b) => (b.metrics.risk_score ?? 0) - (a.metrics.risk_score ?? 0))
+      .map((repo) => ({ name: repo.name, risk_score: repo.metrics.risk_score ?? 0 }));
+  }
+
+  get executiveInsights(): Array<{ label: string; value: string | number }> {
+    if (!this.analysis) return [];
+    const topRepo = this.normalizedRiskRanking[0];
+    const severityEntries = Object.entries(this.analysis.cross_repo_analysis.severity_distribution ?? {});
+    const dominantSeverity = severityEntries.sort((a, b) => b[1] - a[1])[0]?.[0] ?? 'N/A';
+    const highCritical = (this.analysis.cross_repo_analysis.severity_distribution?.['High'] ?? 0) +
+      (this.analysis.cross_repo_analysis.severity_distribution?.['Critical'] ?? 0);
+    const topCwe = this.cweRanking[0]?.cwe ?? 'N/A';
+
+    return [
+      { label: 'Repositorio con mayor riesgo', value: topRepo ? `${topRepo.name} (${topRepo.risk_score.toFixed(2)})` : 'N/A' },
+      { label: 'Severidad predominante', value: dominantSeverity },
+      { label: 'Total High/Critical', value: highCritical },
+      { label: 'Total hallazgos CI/CD', value: this.totalCicdFindings },
+      { label: 'CWE más frecuente', value: topCwe },
+      { label: 'Total fixes disponibles', value: this.totalFixesAvailable },
+    ];
   }
 }

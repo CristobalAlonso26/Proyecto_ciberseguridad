@@ -1,0 +1,13 @@
+<section class="panel" [class.ok]="!validation.warnings.length" [class.warn]="validation.warnings.length > 0">
+  <h3>Validación de artefactos raw</h3>
+  @if (!validation.warnings.length) {
+    <p>Estado: OK · 0 warnings · 0 archivos inválidos.</p>
+  } @else {
+    <p>Warnings: {{ validation.warnings.length }} · Archivos inválidos: {{ validation.invalid_files.length }}</p>
+    <ul>
+      @for (item of validation.invalid_files.slice(0, 5); track item) {
+        <li>{{ item }}</li>
+      }
+    </ul>
+  }
+</section>

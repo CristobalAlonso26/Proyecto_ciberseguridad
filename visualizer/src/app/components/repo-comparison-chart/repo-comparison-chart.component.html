@@ -5,20 +5,23 @@
       <thead>
         <tr>
           <th>Repositorio</th>
-          <th>Componentes</th>
-          <th>Vulnerabilidades</th>
+          <th>Vulns Grype</th>
           <th>Issues CodeQL</th>
           <th>Hallazgos CI/CD</th>
+          <th>Risk score (0-10)</th>
         </tr>
       </thead>
       <tbody>
         @for (repo of repositories; track repo.name) {
           <tr>
             <td>{{ repo.name }}</td>
-            <td>{{ repo.sbom.total_components }}</td>
             <td>{{ repo.vulnerabilities.total }}</td>
             <td>{{ repo.codeql.total_issues }}</td>
             <td>{{ repo.cicd?.total_findings ?? 0 }}</td>
+            <td>
+              <strong>{{ repo.metrics.risk_score | number: '1.0-2' }}</strong>
+              <small>(raw {{ (repo.metrics.risk_score_raw ?? repo.metrics.risk_score) | number: '1.0-4' }})</small>
+            </td>
           </tr>
         }
       </tbody>

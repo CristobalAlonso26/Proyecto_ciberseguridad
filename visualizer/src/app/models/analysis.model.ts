@@ -1,11 +1,19 @@
 export interface Analysis {
-  metadata: {
-    generated_at: string;
-    repos_analyzed: number;
-    data_sources: string[];
-  };
+  metadata: AnalysisMetadata;
   repositories: RepositoryAnalysis[];
   cross_repo_analysis: CrossRepoAnalysis;
+}
+
+export interface AnalysisMetadata {
+  generated_at: string;
+  repos_analyzed: number;
+  data_sources: string[];
+  validation?: ValidationMetadata;
+}
+
+export interface ValidationMetadata {
+  warnings: string[];
+  invalid_files: string[];
 }
 
 export interface RepositoryAnalysis {
@@ -36,7 +44,11 @@ export interface SbomSummary {
 
 export interface VulnerabilitySummary {
   total: number;
-  severity_distribution: Record<string, number>;
+  severity_distribution?: Record<string, number>;
+  by_severity?: Record<string, number>;
+  by_type?: Record<string, number>;
+  by_artifact_type?: Record<string, number>;
+  with_fix_available?: number;
   items: VulnerabilityItem[];
 }
 
@@ -60,14 +72,26 @@ export interface VulnerabilityItem {
 
 export interface CodeqlSummary {
   total_issues: number;
-  top_rules: unknown[];
-  top_files: unknown[];
-  items: unknown[];
+  by_rule?: Record<string, number>;
+  by_level?: Record<string, number>;
+  top_rules?: Array<{ value: string; count: number }>;
+  top_files: Array<{ value: string; count: number }>;
+  items: CodeqlItem[];
+}
+
+export interface CodeqlItem {
+  rule_id: string;
+  level: string;
+  message: string;
+  file: string;
+  line: number;
+  column: number;
 }
 
 export interface Metrics {
   vulnerability_density: number;
   risk_score: number;
+  risk_score_raw?: number;
 }
 
 export interface CrossRepoAnalysis {
@@ -75,8 +99,9 @@ export interface CrossRepoAnalysis {
   total_vulnerabilities: number;
   total_codeql_issues: number;
   total_cicd_findings?: number;
-  cicd_findings_by_repo?: Record<string, number>;
+  cicd_findings_by_repo?: Array<{ name: string; findings: number }>;
   severity_distribution: Record<string, number>;
+  common_weakness_ranking?: Array<{ cwe: string; count: number }>;
   repo_ranking_by_risk: Array<{ name: string; risk_score: number }>;
 }
 

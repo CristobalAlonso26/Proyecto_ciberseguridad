@@ -1,0 +1,15 @@
+<section class="panel">
+  <h3>Executive insights</h3>
+  @if (!insights.length) {
+    <p class="empty">No hay insights disponibles.</p>
+  } @else {
+    <div class="insights-grid">
+      @for (item of insights; track item.label) {
+        <article class="insight-card">
+          <p class="label">{{ item.label }}</p>
+          <p class="value">{{ item.value }}</p>
+        </article>
+      }
+    </div>
+  }
+</section>

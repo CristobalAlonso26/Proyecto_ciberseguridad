@@ -1,0 +1,12 @@
+<section class="panel">
+  <h3>Ranking global CWE</h3>
+  @if (!ranking.length) {
+    <p class="empty">No hay debilidades comunes registradas.</p>
+  } @else {
+    <ol>
+      @for (item of ranking; track item.cwe) {
+        <li><span>{{ item.cwe }}</span><strong>{{ item.count }}</strong></li>
+      }
+    </ol>
+  }
+</section>
