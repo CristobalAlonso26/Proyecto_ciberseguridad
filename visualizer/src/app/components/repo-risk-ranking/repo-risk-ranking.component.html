@@ -8,10 +8,15 @@
         <li [class.top]="i === 0">
           <div class="title-row">
             <span>{{ i + 1 }}. {{ repo.name }}</span>
+            <span class="badge" [style.color]="getBadge(repo.risk_score).color" [style.background]="getBadge(repo.risk_score).bg">
+              {{ getBadge(repo.risk_score).label }}
+            </span>
+          </div>
+          <div class="score-row">
             <strong>{{ repo.risk_score | number: '1.0-2' }} / 10</strong>
+            <small>raw {{ repo.risk_score_raw | number: '1.0-4' }}</small>
           </div>
           <div class="bar-wrap"><div class="bar" [style.width]="width(repo.risk_score)"></div></div>
-          <small>raw {{ repo.risk_score_raw | number: '1.0-4' }}</small>
         </li>
       }
     </ol>

@@ -15,6 +15,7 @@ import { CweRankingComponent } from './components/cwe-ranking/cwe-ranking.compon
 import { ArtifactTypeHeatmapComponent } from './components/artifact-type-heatmap/artifact-type-heatmap.component';
 import { ExecutiveInsightsComponent } from './components/executive-insights/executive-insights.component';
 import { SeverityPyramidComponent } from './components/severity-pyramid/severity-pyramid.component';
+import { KeyFindingsComponent, KeyFinding } from './components/key-findings/key-findings.component';
 
 @Component({
   selector: 'app-root',
@@ -34,6 +35,7 @@ import { SeverityPyramidComponent } from './components/severity-pyramid/severity
     ArtifactTypeHeatmapComponent,
     ExecutiveInsightsComponent,
     SeverityPyramidComponent,
+    KeyFindingsComponent,
   ],
   templateUrl: './app.html',
   styleUrl: './app.css'
@@ -241,5 +243,61 @@ export class App implements OnInit {
       result[key] = (result[key] ?? 0) + 1;
     });
     return result;
+  }
+
+  get keyFindings(): KeyFinding[] {
+    if (!this.analysis) return [];
+
+    const topRepo = this.normalizedRiskRanking[0];
+    const topCwe = this.cweRanking[0];
+    const criticalHighWithFix = this.vulnerabilityRows.filter(
+      (v) => (v.severity === 'Critical' || v.severity === 'High') && v.fix_available
+    ).length;
+
+    const findings: KeyFinding[] = [];
+
+    if (topRepo) {
+      const repoData = this.analysis.repositories.find((r) => r.name === topRepo.name);
+      let driver = 'Sin datos';
+      if (repoData) {
+        const grypeCount = repoData.vulnerabilities.total;
+        const codeqlCount = repoData.codeql.total_issues;
+        const cicdCount = repoData.cicd?.total_findings ?? 0;
+        if (grypeCount >= codeqlCount && grypeCount >= cicdCount) {
+          driver = `${grypeCount} vulnerabilidades de dependencias (Grype)`;
+        } else if (codeqlCount >= grypeCount && codeqlCount >= cicdCount) {
+          driver = `${codeqlCount} issues de analisis estatico (CodeQL)`;
+        } else {
+          driver = `${cicdCount} hallazgos de CI/CD`;
+        }
+      }
+      findings.push({
+        icon: '🎯',
+        label: 'Mayor riesgo',
+        value: `${topRepo.name} (${topRepo.risk_score.toFixed(2)})`,
+        detail: `Driver principal: ${driver}`,
+        accent: 'red',
+      });
+    }
+
+    if (topCwe) {
+      findings.push({
+        icon: '🔗',
+        label: 'Debilidad mas repetida',
+        value: topCwe.cwe,
+        detail: `${topCwe.count} ocurrencias en ${topCwe.repos_count ?? 0} repos`,
+        accent: 'amber',
+      });
+    }
+
+    findings.push({
+      icon: '🔧',
+      label: 'Fixes inmediatos disponibles',
+      value: `${criticalHighWithFix} vulnerabilidades`,
+      detail: 'Critical/High con parche listo para aplicar',
+      accent: 'green',
+    });
+
+    return findings;
   }
 }

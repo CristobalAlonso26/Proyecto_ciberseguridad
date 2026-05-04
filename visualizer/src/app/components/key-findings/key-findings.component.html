@@ -1,0 +1,21 @@
+<section class="panel">
+  <h3>Hallazgos Principales</h3>
+  <p class="subtitle">Resumen accionable del estado de seguridad actual.</p>
+
+  @if (!findings.length) {
+    <p class="empty">Sin hallazgos disponibles.</p>
+  } @else {
+    <div class="findings-grid">
+      @for (item of findings; track item.label) {
+        <article class="finding-card" [class]="'finding-card ' + item.accent">
+          <span class="finding-icon">{{ item.icon }}</span>
+          <div class="finding-body">
+            <p class="label">{{ item.label }}</p>
+            <p class="value">{{ item.value }}</p>
+            <p class="detail">{{ item.detail }}</p>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</section>

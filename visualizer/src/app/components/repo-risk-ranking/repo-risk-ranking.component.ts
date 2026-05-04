@@ -1,6 +1,12 @@
 import { Component, Input } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 
+export interface RiskBadge {
+  label: string;
+  color: string;
+  bg: string;
+}
+
 @Component({
   selector: 'app-repo-risk-ranking',
   standalone: true,
@@ -12,6 +18,16 @@ export class RepoRiskRankingComponent {
   @Input() ranking: Array<{ name: string; risk_score: number; risk_score_raw: number }> = [];
 
   width(score: number): string {
-    return `${Math.max(0, Math.min(100, score * 10))}%`;
+    return `${Math.max(0, Math.min(100, score * 25))}%`;
+  }
+
+  getBadge(score: number): RiskBadge {
+    if (score < 1.0) {
+      return { label: 'Riesgo Controlado', color: '#22c55e', bg: 'rgba(34, 197, 94, 0.12)' };
+    }
+    if (score <= 1.5) {
+      return { label: 'Atencion Requerida', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.12)' };
+    }
+    return { label: 'Intervencion Inmediata', color: '#ef4444', bg: 'rgba(239, 68, 68, 0.12)' };
   }
 }
