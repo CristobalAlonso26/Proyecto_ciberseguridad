@@ -70,7 +70,7 @@ npm run start
 
 El dashboard queda disponible en `http://localhost:4200/`.
 
-> **Nota:** Si `visualizer/src/assets/analysis.json` no existe, se copia automáticamente desde `data/results/analysis.json` al iniciar el contenedor con Docker Compose. En ejecución local, ejecuta `./scripts/prepare_visualizer_data.sh` manualmente.
+> **Nota:** En Docker Compose, `analysis.json` se sincroniza automáticamente desde `data/results/analysis.json` hacia `visualizer/src/assets/analysis.json` en cada arranque del servicio `visualizer`. En ejecución local, ejecuta `./scripts/prepare_visualizer_data.sh` manualmente.
 
 ---
 
@@ -107,7 +107,7 @@ docker compose up analyzer       # Jupyter Lab en http://localhost:8888
 docker compose up visualizer     # Dashboard en http://localhost:4200
 ```
 
-> El servicio `visualizer` copia automáticamente `analysis.json` si no existe en `src/assets/`. No es necesario ejecutar el script manualmente.
+> El servicio `visualizer` sincroniza automáticamente `analysis.json` en cada arranque hacia `src/assets/`. No es necesario ejecutar el script manualmente cuando usas Docker Compose.
 
 ## Estructura
 
