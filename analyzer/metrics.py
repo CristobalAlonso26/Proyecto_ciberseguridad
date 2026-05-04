@@ -3,12 +3,11 @@ from __future__ import annotations
 from typing import Any
 
 
-SEVERITY_WEIGHTS = {
-    "critical": 4,
-    "high": 3,
-    "medium": 2,
+SEVERITY_POINTS = {
+    "critical": 10,
+    "high": 6,
+    "medium": 3,
     "low": 1,
-    "unknown": 1,
 }
 
 
@@ -21,32 +20,20 @@ def risk_score_raw(
     total_codeql_issues: int,
     total_cicd_findings: int,
 ) -> float:
-    _ = total_codeql_issues
-    _ = total_cicd_findings
-
-    weighted_sum = 0.0
+    severity_points = 0.0
     for vuln in vulnerabilities:
-        severity = str(vuln.get("severity") or "unknown").lower()
-        severity_weight = SEVERITY_WEIGHTS.get(severity, 1)
-        try:
-            vuln_risk = float(vuln.get("risk", 0) or 0)
-        except (TypeError, ValueError):
-            vuln_risk = 0.0
-        weighted_sum += vuln_risk * severity_weight
+        severity = str(vuln.get("severity") or "").strip().lower()
+        severity_points += SEVERITY_POINTS.get(severity, 0)
 
-    vuln_count = len(vulnerabilities)
-    if vuln_count == 0:
-        return 0.0
+    codeql_points = max(float(total_codeql_issues or 0), 0.0) * 0.5
+    cicd_points = max(float(total_cicd_findings or 0), 0.0) * 2
 
-    if weighted_sum <= 0:
-        return 0.0
-
-    return weighted_sum / max(vuln_count, 1)
+    return rounded(severity_points + codeql_points + cicd_points)
 
 
 def risk_score(vulnerabilities: list[dict[str, Any]], total_codeql_issues: int, total_cicd_findings: int) -> float:
     raw = risk_score_raw(vulnerabilities, total_codeql_issues, total_cicd_findings)
-    return max(0.0, min(raw, 10.0))
+    return rounded(min(raw / 10, 10))
 
 
 def rounded(value: float) -> float:
