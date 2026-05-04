@@ -1,13 +1,28 @@
-<section class="panel" [class.ok]="!hasWarnings" [class.warn]="hasWarnings">
-  <h3>Validación de artefactos raw</h3>
-  @if (!hasWarnings) {
-    <p class="status">Estado: <strong>OK</strong> · 0 warnings · 0 invalid files</p>
-  } @else {
-    <p class="status">Estado: <strong>WARNING</strong> · {{ validation.warnings.length }} warnings · {{ validation.invalid_files.length }} invalid files</p>
-    <ul>
-      @for (item of validation.invalid_files.slice(0, 5); track item) {
-        <li>{{ item }}</li>
+<div class="validation-dropdown">
+  <button type="button" class="trigger" [class.has-warn]="hasWarnings" (click)="toggle()">
+    @if (hasWarnings) {
+      <span class="dot warn"></span>
+    } @else {
+      <span class="dot ok"></span>
+    }
+    <span class="label">Validacion</span>
+    <span class="arrow" [class.open]="open">▾</span>
+  </button>
+
+  @if (open) {
+    <div class="dropdown-panel">
+      @if (!hasWarnings) {
+        <p class="ok-msg">OK · 0 warnings · 0 archivos invalidos</p>
+      } @else {
+        <p class="warn-msg">WARNING · {{ validation.warnings.length }} warnings · {{ validation.invalid_files.length }} archivos invalidos</p>
+        @if (hasInvalidFiles) {
+          <ul>
+            @for (item of validation.invalid_files.slice(0, 10); track item) {
+              <li>{{ item }}</li>
+            }
+          </ul>
+        }
       }
-    </ul>
+    </div>
   }
-</section>
+</div>

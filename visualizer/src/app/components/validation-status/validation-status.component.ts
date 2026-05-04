@@ -12,7 +12,17 @@ import { ValidationMetadata } from '../../models/analysis.model';
 export class ValidationStatusComponent {
   @Input() validation: ValidationMetadata = { warnings: [], invalid_files: [] };
 
+  open = false;
+
   get hasWarnings(): boolean {
     return this.validation.warnings.length > 0;
+  }
+
+  get hasInvalidFiles(): boolean {
+    return this.validation.invalid_files.length > 0;
+  }
+
+  toggle(): void {
+    this.open = !this.open;
   }
 }

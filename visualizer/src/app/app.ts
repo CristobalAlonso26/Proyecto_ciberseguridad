@@ -13,7 +13,6 @@ import { ValidationStatusComponent } from './components/validation-status/valida
 import { CodeqlLevelSummaryComponent } from './components/codeql-level-summary/codeql-level-summary.component';
 import { CweRankingComponent } from './components/cwe-ranking/cwe-ranking.component';
 import { ArtifactTypeHeatmapComponent } from './components/artifact-type-heatmap/artifact-type-heatmap.component';
-import { ExecutiveInsightsComponent } from './components/executive-insights/executive-insights.component';
 import { SeverityPyramidComponent } from './components/severity-pyramid/severity-pyramid.component';
 import { KeyFindingsComponent, KeyFinding } from './components/key-findings/key-findings.component';
 
@@ -33,7 +32,6 @@ import { KeyFindingsComponent, KeyFinding } from './components/key-findings/key-
     CodeqlLevelSummaryComponent,
     CweRankingComponent,
     ArtifactTypeHeatmapComponent,
-    ExecutiveInsightsComponent,
     SeverityPyramidComponent,
     KeyFindingsComponent,
   ],
@@ -196,39 +194,14 @@ export class App implements OnInit {
     }));
   }
 
-  get normalizedRiskRanking(): Array<{ name: string; risk_score: number; risk_score_raw: number }> {
+  get normalizedRiskRanking(): Array<{ name: string; risk_score: number }> {
     if (!this.analysis) return [];
     return [...this.filteredRepositories]
       .sort((a, b) => (b.metrics.risk_score ?? 0) - (a.metrics.risk_score ?? 0))
       .map((repo) => ({
         name: repo.name,
         risk_score: repo.metrics.risk_score ?? 0,
-        risk_score_raw: repo.metrics.risk_score_raw ?? repo.metrics.risk_score ?? 0,
       }));
-  }
-
-  get executiveInsights(): Array<{ label: string; value: string | number; secondary: string; accent: string }> {
-    if (!this.analysis) return [];
-    const topRepo = this.normalizedRiskRanking[0];
-    const severityEntries = Object.entries(this.filteredSeverityDistribution);
-    const dominantSeverity = severityEntries.sort((a, b) => b[1] - a[1])[0]?.[0] ?? 'N/A';
-    const highCritical = (this.filteredSeverityDistribution['High'] ?? 0) +
-      (this.filteredSeverityDistribution['Critical'] ?? 0);
-    const topCwe = this.cweRanking[0]?.cwe ?? 'N/A';
-
-    return [
-      {
-        label: 'Repositorio con mayor riesgo',
-        value: topRepo ? `${topRepo.name}` : 'N/A',
-        secondary: topRepo ? `Score ${topRepo.risk_score.toFixed(2)} / 10` : 'Sin datos de ranking',
-        accent: 'critical',
-      },
-      { label: 'Severidad predominante', value: dominantSeverity, secondary: 'Distribución global de Grype', accent: 'amber' },
-      { label: 'Total High/Critical', value: highCritical, secondary: 'Vulnerabilidades prioritarias', accent: 'red' },
-      { label: 'Total CI/CD findings', value: this.totalCicdFindings, secondary: 'Hallazgos de workflows', accent: 'teal' },
-      { label: 'CWE más frecuente', value: topCwe, secondary: 'Debilidad más repetida', accent: 'cyan' },
-      { label: 'Fixes disponibles', value: this.totalFixesAvailable, secondary: 'Remediación potencial inmediata', accent: 'green' },
-    ];
   }
 
   get formattedGeneratedAt(): string {

@@ -17,6 +17,7 @@ CODEQL_LEVEL_WEIGHTS = {
 }
 
 SMOOTHING_FACTOR = 5
+SCALE_FACTOR = 2.5
 
 
 def vulnerability_density(total_vulnerabilities: int, total_components: int) -> float:
@@ -52,7 +53,7 @@ def risk_score(
     vulnerabilities: list[dict[str, Any]],
     codeql_issues: list[dict[str, Any]],
 ) -> float:
-    return rounded(risk_score_raw(vulnerabilities, codeql_issues))
+    return rounded(risk_score_raw(vulnerabilities, codeql_issues) * SCALE_FACTOR)
 
 
 def rounded(value: float) -> float:

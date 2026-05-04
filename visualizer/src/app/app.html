@@ -12,6 +12,7 @@
       <span class="badge">Grype</span>
       <span class="badge">CodeQL</span>
       <span class="badge">CI/CD</span>
+      <app-validation-status [validation]="validation"></app-validation-status>
     </div>
   </header>
 
@@ -55,9 +56,7 @@
     </section>
 
     <app-key-findings [findings]="keyFindings"></app-key-findings>
-    <app-executive-insights [insights]="executiveInsights"></app-executive-insights>
     <app-kpi-cards [cards]="kpis"></app-kpi-cards>
-    <app-validation-status [validation]="validation"></app-validation-status>
 
     <section class="grid-2">
       <app-severity-chart [distribution]="filteredSeverityDistribution"></app-severity-chart>
