@@ -21,23 +21,32 @@ def risk_score_raw(
     total_codeql_issues: int,
     total_cicd_findings: int,
 ) -> float:
+    _ = total_codeql_issues
+    _ = total_cicd_findings
+
     weighted_sum = 0.0
     for vuln in vulnerabilities:
         severity = str(vuln.get("severity") or "unknown").lower()
-        weighted_sum += SEVERITY_WEIGHTS.get(severity, 1)
+        severity_weight = SEVERITY_WEIGHTS.get(severity, 1)
+        try:
+            vuln_risk = float(vuln.get("risk", 0) or 0)
+        except (TypeError, ValueError):
+            vuln_risk = 0.0
+        weighted_sum += vuln_risk * severity_weight
 
-    codeql_factor = min(total_codeql_issues / 100, 5)
-    cicd_factor = min(total_cicd_findings / 50, 5)
-
-    if weighted_sum == 0 and codeql_factor == 0 and cicd_factor == 0:
+    vuln_count = len(vulnerabilities)
+    if vuln_count == 0:
         return 0.0
 
-    return weighted_sum + codeql_factor + cicd_factor
+    if weighted_sum <= 0:
+        return 0.0
+
+    return weighted_sum / max(vuln_count, 1)
 
 
 def risk_score(vulnerabilities: list[dict[str, Any]], total_codeql_issues: int, total_cicd_findings: int) -> float:
     raw = risk_score_raw(vulnerabilities, total_codeql_issues, total_cicd_findings)
-    return min(raw / 10, 10)
+    return max(0.0, min(raw, 10.0))
 
 
 def rounded(value: float) -> float:
