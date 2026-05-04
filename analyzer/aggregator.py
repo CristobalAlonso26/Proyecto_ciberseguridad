@@ -44,13 +44,12 @@ def _build_repository_entry(
     total_components = int(sbom_data.get("total_components", 0))
     total_vulns = len(vulnerabilities)
     total_codeql = len(codeql_issues)
-    total_cicd_findings = int(cicd_data.get("total_findings", 0)) if isinstance(cicd_data, dict) else 0
     by_severity = severity_distribution(vulnerabilities)
     by_type = count_by_field(vulnerabilities, "artifact_type")
     by_rule = count_by_field(codeql_issues, "rule_id")
     by_level = count_by_field(codeql_issues, "level")
-    repo_risk_raw = rounded(risk_score_raw(vulnerabilities, total_codeql, total_cicd_findings))
-    repo_risk = rounded(risk_score(vulnerabilities, total_codeql, total_cicd_findings))
+    repo_risk_raw = rounded(risk_score_raw(vulnerabilities, codeql_issues))
+    repo_risk = rounded(risk_score(vulnerabilities, codeql_issues))
 
     return {
         "name": name,

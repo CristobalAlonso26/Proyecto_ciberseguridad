@@ -1,55 +1,58 @@
 from __future__ import annotations
 
-import math
 from typing import Any
 
-SEVERITY_WEIGHTS = {
+GRYPE_SEVERITY_WEIGHTS = {
     "critical": 4,
     "high": 3,
     "medium": 2,
     "low": 1,
+    "unknown": 1,
 }
 
-GRYPE_WEIGHT = 0.6
-CODEQL_WEIGHT = 0.2
-CICD_WEIGHT = 0.2
+CODEQL_LEVEL_WEIGHTS = {
+    "error": 4,
+    "warning": 2,
+    "note": 1,
+}
+
+SMOOTHING_FACTOR = 5
 
 
 def vulnerability_density(total_vulnerabilities: int, total_components: int) -> float:
     return (total_vulnerabilities / max(total_components, 1)) * 100
 
 
+def _grype_weight(vulnerabilities: list[dict[str, Any]]) -> float:
+    total = 0.0
+    for vuln in vulnerabilities:
+        severity = str(vuln.get("severity") or "").strip().lower()
+        total += GRYPE_SEVERITY_WEIGHTS.get(severity, 1)
+    return total
+
+
+def _codeql_weight(codeql_issues: list[dict[str, Any]]) -> float:
+    total = 0.0
+    for issue in codeql_issues:
+        level = str(issue.get("level") or "").strip().lower()
+        total += CODEQL_LEVEL_WEIGHTS.get(level, 1)
+    return total
+
+
 def risk_score_raw(
     vulnerabilities: list[dict[str, Any]],
-    total_codeql_issues: int,
-    total_cicd_findings: int,
+    codeql_issues: list[dict[str, Any]],
 ) -> float:
-    weighted_sum = 0.0
-    valid_count = 0
-    for vuln in vulnerabilities:
-        risk = vuln.get("risk")
-        if not isinstance(risk, (int, float)) or risk < 0:
-            continue
-        severity = str(vuln.get("severity") or "").strip().lower()
-        weight = SEVERITY_WEIGHTS.get(severity, 1)
-        weighted_sum += risk * weight
-        valid_count += 1
-
-    grype_component = weighted_sum / max(valid_count, 1)
-
-    codeql_component = min(math.log1p(max(float(total_codeql_issues or 0), 0.0)) * 2, 10)
-    cicd_component = min(math.log1p(max(float(total_cicd_findings or 0), 0.0)) * 3, 10)
-
-    return rounded(
-        grype_component * GRYPE_WEIGHT
-        + codeql_component * CODEQL_WEIGHT
-        + cicd_component * CICD_WEIGHT
-    )
+    total_weight = _grype_weight(vulnerabilities) + _codeql_weight(codeql_issues)
+    total_items = len(vulnerabilities) + len(codeql_issues)
+    return total_weight / (total_items + SMOOTHING_FACTOR)
 
 
-def risk_score(vulnerabilities: list[dict[str, Any]], total_codeql_issues: int, total_cicd_findings: int) -> float:
-    raw = risk_score_raw(vulnerabilities, total_codeql_issues, total_cicd_findings)
-    return rounded(min(raw, 10))
+def risk_score(
+    vulnerabilities: list[dict[str, Any]],
+    codeql_issues: list[dict[str, Any]],
+) -> float:
+    return rounded(risk_score_raw(vulnerabilities, codeql_issues))
 
 
 def rounded(value: float) -> float:
