@@ -29,3 +29,26 @@ def top_codeql_rules(issues: list[dict[str, Any]], n: int = 10) -> list[dict[str
 
 def top_codeql_files(issues: list[dict[str, Any]], n: int = 10) -> list[dict[str, Any]]:
     return top_n_by_field(issues, "file", n)
+
+
+def count_true_field(items: list[dict[str, Any]], field: str) -> int:
+    return sum(1 for item in items if item.get(field) is True)
+
+
+def common_weakness_ranking(vulnerabilities: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    counter: Counter[str] = Counter()
+    ignored_values = {"", "unknown", "none", "null"}
+
+    for vulnerability in vulnerabilities:
+        value = vulnerability.get("cwe")
+        if value is None:
+            continue
+        cwe = str(value).strip()
+        if cwe.lower() in ignored_values:
+            continue
+        counter[cwe] += 1
+
+    return [
+        {"cwe": cwe, "count": count}
+        for cwe, count in sorted(counter.items(), key=lambda item: (-item[1], item[0]))
+    ]

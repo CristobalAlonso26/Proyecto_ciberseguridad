@@ -6,10 +6,17 @@ from typing import Any
 
 from analyzer.cicd_parser import normalize_repo_name, parse_cicd
 from analyzer.codeql_parser import parse_codeql
-from analyzer.counters import severity_distribution, top_codeql_files, top_codeql_rules
+from analyzer.counters import (
+    common_weakness_ranking,
+    count_by_field,
+    count_true_field,
+    severity_distribution,
+    top_codeql_files,
+    top_codeql_rules,
+)
 from analyzer.grype_parser import parse_grype
 from analyzer.loaders import load_json_file
-from analyzer.metrics import risk_score, vulnerability_density
+from analyzer.metrics import risk_score, risk_score_raw, rounded, vulnerability_density
 from analyzer.sbom_parser import parse_sbom
 
 
@@ -30,17 +37,30 @@ def _build_repository_entry(
     total_components = int(sbom_data.get("total_components", 0))
     total_vulns = len(vulnerabilities)
     total_codeql = len(codeql_issues)
+    total_cicd_findings = int(cicd_data.get("total_findings", 0)) if isinstance(cicd_data, dict) else 0
+    by_severity = severity_distribution(vulnerabilities)
+    by_type = count_by_field(vulnerabilities, "artifact_type")
+    by_rule = count_by_field(codeql_issues, "rule_id")
+    by_level = count_by_field(codeql_issues, "level")
+    repo_risk_raw = rounded(risk_score_raw(vulnerabilities, total_codeql, total_cicd_findings))
+    repo_risk = rounded(risk_score(vulnerabilities, total_codeql, total_cicd_findings))
 
     return {
         "name": name,
         "sbom": sbom_data,
         "vulnerabilities": {
             "total": total_vulns,
-            "severity_distribution": severity_distribution(vulnerabilities),
+            "severity_distribution": by_severity,
+            "by_severity": by_severity,
+            "by_artifact_type": by_type,
+            "by_type": by_type,
+            "with_fix_available": count_true_field(vulnerabilities, "fix_available"),
             "items": vulnerabilities,
         },
         "codeql": {
             "total_issues": total_codeql,
+            "by_rule": by_rule,
+            "by_level": by_level,
             "top_rules": top_codeql_rules(codeql_issues),
             "top_files": top_codeql_files(codeql_issues),
             "items": codeql_issues,
@@ -48,7 +68,8 @@ def _build_repository_entry(
         "cicd": cicd_data,
         "metrics": {
             "vulnerability_density": vulnerability_density(total_vulns, total_components),
-            "risk_score": risk_score(vulnerabilities, total_codeql),
+            "risk_score_raw": repo_risk_raw,
+            "risk_score": repo_risk,
         },
     }
 
@@ -118,7 +139,7 @@ def build_analysis(
             {"name": r["name"], "risk_score": r["metrics"]["risk_score"]}
             for r in repositories
         ),
-        key=lambda item: item["risk_score"],
+        key=lambda item: (item["risk_score"], item["name"]),
         reverse=True,
     )
 
@@ -136,6 +157,7 @@ def build_analysis(
             "total_cicd_findings": total_cicd_findings,
             "cicd_findings_by_repo": cicd_findings_by_repo,
             "severity_distribution": severity_distribution(all_vulnerabilities),
+            "common_weakness_ranking": common_weakness_ranking(all_vulnerabilities),
             "repo_ranking_by_risk": ranking,
         },
     }
