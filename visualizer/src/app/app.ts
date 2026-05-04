@@ -14,7 +14,6 @@ import { CodeqlLevelSummaryComponent } from './components/codeql-level-summary/c
 import { CweRankingComponent } from './components/cwe-ranking/cwe-ranking.component';
 import { ArtifactTypeHeatmapComponent } from './components/artifact-type-heatmap/artifact-type-heatmap.component';
 import { ExecutiveInsightsComponent } from './components/executive-insights/executive-insights.component';
-import { RepoSeverityMatrixComponent } from './components/repo-severity-matrix/repo-severity-matrix.component';
 import { SeverityPyramidComponent } from './components/severity-pyramid/severity-pyramid.component';
 
 @Component({
@@ -34,7 +33,6 @@ import { SeverityPyramidComponent } from './components/severity-pyramid/severity
     CweRankingComponent,
     ArtifactTypeHeatmapComponent,
     ExecutiveInsightsComponent,
-    RepoSeverityMatrixComponent,
     SeverityPyramidComponent,
   ],
   templateUrl: './app.html',

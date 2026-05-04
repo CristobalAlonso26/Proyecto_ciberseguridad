@@ -23,7 +23,7 @@ export class SeverityPyramidComponent implements OnChanges {
     scales: { x: { stacked: true }, y: { stacked: true } },
     plugins: {
       legend: { labels: { color: '#cbd5e1' } },
-      tooltip: { mode: 'index', intersect: false },
+      tooltip: { mode: 'index', intersect: true },
     },
   };
 
