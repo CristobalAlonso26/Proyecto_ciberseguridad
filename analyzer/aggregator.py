@@ -15,9 +15,16 @@ from analyzer.counters import (
     top_codeql_rules,
 )
 from analyzer.grype_parser import parse_grype
-from analyzer.loaders import load_json_file
+from analyzer.loaders import load_json_file_with_diagnostics
 from analyzer.metrics import risk_score, risk_score_raw, rounded, vulnerability_density
 from analyzer.sbom_parser import parse_sbom
+from analyzer.validators import (
+    ValidationResult,
+    validate_cicd,
+    validate_codeql,
+    validate_grype,
+    validate_sbom,
+)
 
 
 def _repo_name_from_file(file_path: Path, suffix: str) -> str:
@@ -80,23 +87,65 @@ def build_analysis(
     codeql_files: list[Path],
     cicd_files: list[Path],
 ) -> dict[str, Any]:
-    sbom_by_repo = {
-        _repo_name_from_file(path, "_sbom.json"): parse_sbom(load_json_file(path))
-        for path in sbom_files
-    }
-    vulns_by_repo = {
-        _repo_name_from_file(path, "_vuln.json"): parse_grype(load_json_file(path))
-        for path in vuln_files
-    }
-    codeql_by_repo = {
-        _repo_name_from_file(path, "_codeql.sarif"): parse_codeql(load_json_file(path))
-        for path in codeql_files
-    }
+    validation_warnings: list[str] = []
+    invalid_files: list[str] = []
+
+    def _collect(result: ValidationResult) -> None:
+        validation_warnings.extend(result.warnings)
+        invalid_files.extend(result.invalid_files)
+
+    sbom_by_repo: dict[str, dict[str, Any]] = {}
+    for path in sbom_files:
+        load_result = load_json_file_with_diagnostics(path)
+        validation_warnings.extend(load_result.warnings)
+        invalid_files.extend(load_result.invalid_files)
+        if load_result.invalid_files:
+            continue
+        validation_result = validate_sbom(load_result.data, path)
+        _collect(validation_result)
+        if not validation_result.valid:
+            continue
+        sbom_by_repo[_repo_name_from_file(path, "_sbom.json")] = parse_sbom(load_result.data)
+
+    vulns_by_repo: dict[str, list[dict[str, Any]]] = {}
+    for path in vuln_files:
+        load_result = load_json_file_with_diagnostics(path)
+        validation_warnings.extend(load_result.warnings)
+        invalid_files.extend(load_result.invalid_files)
+        if load_result.invalid_files:
+            continue
+        validation_result = validate_grype(load_result.data, path)
+        _collect(validation_result)
+        if not validation_result.valid:
+            continue
+        vulns_by_repo[_repo_name_from_file(path, "_vuln.json")] = parse_grype(load_result.data)
+
+    codeql_by_repo: dict[str, list[dict[str, Any]]] = {}
+    for path in codeql_files:
+        load_result = load_json_file_with_diagnostics(path)
+        validation_warnings.extend(load_result.warnings)
+        invalid_files.extend(load_result.invalid_files)
+        if load_result.invalid_files:
+            continue
+        validation_result = validate_codeql(load_result.data, path)
+        _collect(validation_result)
+        if not validation_result.valid:
+            continue
+        codeql_by_repo[_repo_name_from_file(path, "_codeql.sarif")] = parse_codeql(load_result.data)
+
     cicd_by_repo: dict[str, dict[str, Any]] = {}
     for path in cicd_files:
-        data = load_json_file(path)
-        parsed = parse_cicd(data)
-        repo_name = normalize_repo_name(data.get("repo") if isinstance(data, dict) else None)
+        load_result = load_json_file_with_diagnostics(path)
+        validation_warnings.extend(load_result.warnings)
+        invalid_files.extend(load_result.invalid_files)
+        if load_result.invalid_files:
+            continue
+        validation_result = validate_cicd(load_result.data, path)
+        _collect(validation_result)
+        if not validation_result.valid:
+            continue
+        parsed = parse_cicd(load_result.data)
+        repo_name = normalize_repo_name(load_result.data.get("repo"))
         if repo_name == "unknown":
             repo_name = _repo_name_from_file(path, "_cicd.json")
         cicd_by_repo[repo_name] = parsed
@@ -148,6 +197,10 @@ def build_analysis(
             "generated_at": datetime.now(timezone.utc).isoformat(),
             "repos_analyzed": len(repositories),
             "data_sources": ["sbom", "grype", "codeql", "cicd"],
+            "validation": {
+                "warnings": validation_warnings,
+                "invalid_files": sorted(set(invalid_files)),
+            },
         },
         "repositories": repositories,
         "cross_repo_analysis": {

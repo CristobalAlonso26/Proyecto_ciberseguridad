@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+import argparse
 from pathlib import Path
 
 if __package__ is None or __package__ == "":
@@ -15,6 +16,14 @@ from analyzer.writer import write_json
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description="Generate consolidated analysis JSON")
+    parser.add_argument(
+        "--skip-notebooks",
+        action="store_true",
+        help="Generate analysis.json without executing notebooks",
+    )
+    args = parser.parse_args()
+
     sbom_files = list_files(SBOMS_DIR, "*_sbom.json")
     vuln_files = list_files(VULNS_DIR, "*_vuln.json")
     codeql_files = list_files(CODEQL_DIR, "*_codeql.sarif")
@@ -35,6 +44,11 @@ def main() -> None:
 
     if previous_hash == current_hash:
         print("Analysis unchanged. Skipping notebook execution.")
+        return
+
+    if args.skip_notebooks:
+        print("Notebook execution skipped by --skip-notebooks flag.")
+        save_analysis_hash(ANALYSIS_STATE_PATH, current_hash)
         return
 
     notebook_status, notebook_detail = execute_notebooks(PROJECT_ROOT)
