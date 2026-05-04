@@ -26,7 +26,6 @@ class Pipeline:
         reports_root: str = "data/reports",
         visibility: str = "public",
         limit: int = 50,
-        recent_days: int = 30,
         clone_workers: int = 3,
         analysis_workers: int = 2,
         keep_repos: bool = False,
@@ -39,7 +38,6 @@ class Pipeline:
         self.reports_root = Path(reports_root)
         self.visibility = visibility
         self.limit = limit
-        self.recent_days = recent_days
         self.clone_workers = clone_workers
         self.analysis_workers = analysis_workers
         self.keep_repos = keep_repos
@@ -47,7 +45,7 @@ class Pipeline:
     def run(self) -> dict:
         logger.info(f"Buscando repos de '{self.org}'...")
         repos = self.client.fetch_active_repos(
-            self.org, self.visibility, self.limit, self.recent_days
+            self.org, self.visibility, self.limit
         )
         logger.info(f"{len(repos)} repos activos encontrados")
 

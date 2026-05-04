@@ -28,7 +28,6 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--analysis-workers", type=int, default=2, help="Workers para análisis (default: 2)")
     p.add_argument("--visibility", choices=["all", "public", "private", "internal"], default="public")
     p.add_argument("--limit", type=int, default=default_limit, help=f"Máximo de repos (default: {default_limit})")
-    p.add_argument("--recent-days", type=int, default=30, help="Días de actividad (default: 30)")
     p.add_argument("--dry-run", action="store_true", help="Solo listar repos")
     p.add_argument("--keep-repos", action="store_true", help="No eliminar repos clonados después del análisis")
     p.add_argument("--output-json", type=Path, help="Guardar resumen en JSON")
@@ -57,7 +56,7 @@ def run() -> None:
     if args.dry_run:
         from .github_client import GitHubClient
         client = GitHubClient(token)
-        repos = client.fetch_active_repos(org, args.visibility, args.limit, args.recent_days)
+        repos = client.fetch_active_repos(org, args.visibility, args.limit)
         for r in repos:
             print(f"  {r.full_name} ({r.language or '?'})")
         print(f"\nTotal: {len(repos)} repos")
@@ -71,7 +70,6 @@ def run() -> None:
         reports_root=os.environ.get("REPORTS_ROOT", str(project_root / "data" / "reports")),
         visibility=args.visibility,
         limit=args.limit,
-        recent_days=args.recent_days,
         clone_workers=args.workers,
         analysis_workers=args.analysis_workers,
         keep_repos=args.keep_repos,

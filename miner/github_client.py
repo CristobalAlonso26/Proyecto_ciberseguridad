@@ -1,5 +1,4 @@
 import logging
-import time
 from datetime import datetime
 from typing import Any
 
@@ -66,21 +65,14 @@ class GitHubClient:
         org: str,
         visibility: str = "public",
         limit: int = 50,
-        recent_days: int = 30,
     ) -> list[Repository]:
-        cutoff = time.time() - (recent_days * 86400)
         all_repos = self.list_org_repos(org, visibility)
 
-        active = []
+        repos = []
         for data in all_repos:
             if data.get("archived"):
                 continue
-            pushed = data.get("pushed_at")
-            if pushed:
-                ts = datetime.fromisoformat(pushed.replace("Z", "+00:00")).timestamp()
-                if ts < cutoff:
-                    continue
-            active.append(Repository.from_api(data))
+            repos.append(Repository.from_api(data))
 
-        active.sort(key=lambda r: r.pushed_at or datetime.min, reverse=True)
-        return active[:limit]
+        repos.sort(key=lambda r: r.pushed_at or datetime.min, reverse=True)
+        return repos[:limit]
