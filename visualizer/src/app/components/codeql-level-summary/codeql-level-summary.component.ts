@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RepositoryAnalysis } from '../../models/analysis.model';
 
 @Component({
   selector: 'app-codeql-level-summary',
@@ -9,11 +10,32 @@ import { CommonModule } from '@angular/common';
   styleUrl: './codeql-level-summary.component.css',
 })
 export class CodeqlLevelSummaryComponent {
-  @Input() byLevel: Record<string, number> = {};
+  @Input() repositories: RepositoryAnalysis[] = [];
 
-  get entries(): Array<{ level: string; count: number }> {
-    return Object.entries(this.byLevel)
-      .map(([level, count]) => ({ level, count }))
-      .sort((a, b) => b.count - a.count);
+  get levels(): string[] {
+    const detected = new Set<string>();
+    this.repositories.forEach((repo) => {
+      Object.keys(repo.codeql.by_level ?? {}).forEach((level) => detected.add(level));
+    });
+    return Array.from(detected).sort((a, b) => a.localeCompare(b));
+  }
+
+  count(repo: RepositoryAnalysis, level: string): number {
+    return (repo.codeql.by_level ?? {})[level] ?? 0;
+  }
+
+  total(repo: RepositoryAnalysis): number {
+    return Object.values(repo.codeql.by_level ?? {}).reduce((acc, value) => acc + value, 0);
+  }
+
+  maxValue(): number {
+    const values = this.repositories.flatMap((repo) => this.levels.map((lvl) => this.count(repo, lvl)));
+    return Math.max(0, ...values);
+  }
+
+  alpha(value: number): number {
+    const max = this.maxValue();
+    if (!max) return 0.1;
+    return 0.15 + (value / max) * 0.75;
   }
 }

@@ -14,6 +14,7 @@ export class VulnerabilitiesTableComponent {
 
   selectedRepository = 'all';
   selectedSeverity = 'all';
+  search = '';
 
   get repositories(): string[] {
     return Array.from(new Set(this.rows.map((x) => x.repository))).sort();
@@ -27,7 +28,14 @@ export class VulnerabilitiesTableComponent {
     return this.rows.filter((row) => {
       const matchesRepo = this.selectedRepository === 'all' || row.repository === this.selectedRepository;
       const matchesSeverity = this.selectedSeverity === 'all' || row.severity === this.selectedSeverity;
-      return matchesRepo && matchesSeverity;
+      const q = this.search.trim().toLowerCase();
+      const matchesSearch =
+        !q ||
+        row.id?.toLowerCase().includes(q) ||
+        row.artifact?.toLowerCase().includes(q) ||
+        row.cwe?.toLowerCase().includes(q) ||
+        row.location?.toLowerCase().includes(q);
+      return matchesRepo && matchesSeverity && matchesSearch;
     });
   }
 

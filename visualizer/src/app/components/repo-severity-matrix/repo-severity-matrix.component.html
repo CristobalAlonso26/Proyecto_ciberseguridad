@@ -1,0 +1,32 @@
+<section class="panel">
+  <h3>Severidad por repositorio</h3>
+  <p class="subtitle">Distribución Critical/High/Medium/Low por repo.</p>
+
+  @if (!repositories.length) {
+    <p class="empty">No hay repositorios para mostrar.</p>
+  } @else {
+    <div class="rows">
+      @for (repo of repositories; track repo.name) {
+        <article class="row">
+          <div class="repo">{{ repo.name }}</div>
+          <div class="stack" [class.no-data]="!getTotal(repo)">
+            @for (sev of severities; track sev) {
+              <span
+                class="segment"
+                [class]="'segment ' + sev.toLowerCase()"
+                [style.width]="width(repo, sev)"
+                [title]="sev + ': ' + count(repo, sev)"
+              ></span>
+            }
+          </div>
+          <div class="legend">
+            <span class="sev critical">C {{ count(repo, 'Critical') }}</span>
+            <span class="sev high">H {{ count(repo, 'High') }}</span>
+            <span class="sev medium">M {{ count(repo, 'Medium') }}</span>
+            <span class="sev low">L {{ count(repo, 'Low') }}</span>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</section>

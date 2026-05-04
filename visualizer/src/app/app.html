@@ -30,8 +30,10 @@
       <app-repo-risk-ranking [ranking]="normalizedRiskRanking"></app-repo-risk-ranking>
     </section>
 
+    <app-repo-severity-matrix [repositories]="analysis!.repositories"></app-repo-severity-matrix>
+
     <section class="grid-2">
-      <app-codeql-level-summary [byLevel]="codeqlByLevel"></app-codeql-level-summary>
+      <app-codeql-level-summary [repositories]="analysis!.repositories"></app-codeql-level-summary>
       <app-cwe-ranking [ranking]="cweRanking"></app-cwe-ranking>
     </section>
 

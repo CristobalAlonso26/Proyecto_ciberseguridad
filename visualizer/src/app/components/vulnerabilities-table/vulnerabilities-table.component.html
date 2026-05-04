@@ -22,6 +22,11 @@
         }
       </select>
     </label>
+
+    <label>
+      Buscar
+      <input [(ngModel)]="search" type="text" placeholder="ID, artifact, CWE, location" />
+    </label>
   </div>
 
   @if (!rows.length) {
@@ -48,14 +53,14 @@
           @for (item of filteredRows; track item.repository + item.id + item.location) {
             <tr>
               <td><span class="repo-chip">{{ item.repository }}</span></td>
-              <td [title]="item.id">{{ truncate(item.id, 24) }}</td>
+              <td [title]="item.id"><code>{{ truncate(item.id, 24) }}</code></td>
               <td><span class="sev" [class]="'sev ' + severityClass(item.severity)">{{ item.severity }}</span></td>
               <td><span class="artifact-chip">{{ item.artifact }}</span></td>
               <td>{{ item.artifact_version }}</td>
-              <td>{{ item.cwe || '-' }}</td>
+              <td><span class="cwe-chip">{{ item.cwe || '-' }}</span></td>
               <td><span class="fix" [class.no-fix]="!item.fix_available">{{ item.fix_available ? 'Fix' : 'No Fix' }}</span></td>
               <td>{{ item.fix_version || '-' }}</td>
-              <td [title]="item.location || '-'">{{ truncate(item.location, 30) }}</td>
+              <td [title]="item.location || '-'"><span class="location">{{ truncate(item.location, 44) }}</span></td>
             </tr>
           }
         </tbody>

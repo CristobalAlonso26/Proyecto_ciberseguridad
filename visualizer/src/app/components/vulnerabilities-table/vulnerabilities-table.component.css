@@ -7,6 +7,7 @@
 
 .filters {
   display: flex;
+  flex-wrap: wrap;
   gap: 12px;
   margin-bottom: 12px;
 }
@@ -25,6 +26,15 @@ select {
   border: 1px solid #334155;
   border-radius: 8px;
   padding: 8px;
+}
+
+input {
+  background: #0f172a;
+  color: #f8fafc;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 8px;
+  min-width: 220px;
 }
 
 .table-wrap {
@@ -55,6 +65,20 @@ tbody tr:hover { background: rgba(30, 41, 59, 0.45); }
   border-radius: 999px;
   font-size: 0.75rem;
   padding: 2px 8px;
+}
+
+.cwe-chip {
+  border: 1px solid #334155;
+  border-radius: 8px;
+  color: #cbd5e1;
+  padding: 2px 6px;
+  font-size: 0.75rem;
+}
+
+.location {
+  color: #cbd5e1;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.75rem;
 }
 
 .repo-chip { color: #67e8f9; }

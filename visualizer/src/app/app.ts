@@ -13,6 +13,7 @@ import { CodeqlLevelSummaryComponent } from './components/codeql-level-summary/c
 import { CweRankingComponent } from './components/cwe-ranking/cwe-ranking.component';
 import { ArtifactTypeHeatmapComponent } from './components/artifact-type-heatmap/artifact-type-heatmap.component';
 import { ExecutiveInsightsComponent } from './components/executive-insights/executive-insights.component';
+import { RepoSeverityMatrixComponent } from './components/repo-severity-matrix/repo-severity-matrix.component';
 
 @Component({
   selector: 'app-root',
@@ -30,6 +31,7 @@ import { ExecutiveInsightsComponent } from './components/executive-insights/exec
     CweRankingComponent,
     ArtifactTypeHeatmapComponent,
     ExecutiveInsightsComponent,
+    RepoSeverityMatrixComponent,
   ],
   templateUrl: './app.html',
   styleUrl: './app.css'
@@ -93,7 +95,7 @@ export class App implements OnInit {
   get vulnerabilityRows(): VulnerabilityRow[] {
     if (!this.analysis) return [];
     return this.analysis.repositories.flatMap((repo) =>
-      repo.vulnerabilities.items.map((item) => ({ ...item, repository: repo.name }))
+      (repo.vulnerabilities.items ?? []).map((item) => ({ ...item, repository: repo.name }))
     );
   }
 
@@ -112,19 +114,23 @@ export class App implements OnInit {
     return this.analysis?.metadata.validation ?? { warnings: [], invalid_files: [] };
   }
 
-  get codeqlByLevel(): Record<string, number> {
-    if (!this.analysis) return {};
-    return this.analysis.repositories.reduce<Record<string, number>>((acc, repo) => {
-      const byLevel = repo.codeql.by_level ?? {};
-      Object.entries(byLevel).forEach(([level, count]) => {
-        acc[level] = (acc[level] ?? 0) + count;
-      });
-      return acc;
-    }, {});
-  }
+  get cweRanking(): Array<{ cwe: string; count: number; repos_count: number }> {
+    if (!this.analysis) return [];
 
-  get cweRanking(): Array<{ cwe: string; count: number }> {
-    return this.analysis?.cross_repo_analysis.common_weakness_ranking ?? [];
+    const baseRanking = this.analysis.cross_repo_analysis.common_weakness_ranking ?? [];
+    const cweRepoMap = new Map<string, Set<string>>();
+
+    this.vulnerabilityRows.forEach((row) => {
+      const cwe = row.cwe?.trim();
+      if (!cwe) return;
+      if (!cweRepoMap.has(cwe)) cweRepoMap.set(cwe, new Set<string>());
+      cweRepoMap.get(cwe)?.add(row.repository);
+    });
+
+    return baseRanking.map((item) => ({
+      ...item,
+      repos_count: cweRepoMap.get(item.cwe)?.size ?? 0,
+    }));
   }
 
   get normalizedRiskRanking(): Array<{ name: string; risk_score: number; risk_score_raw: number }> {

@@ -9,5 +9,14 @@ import { CommonModule } from '@angular/common';
   styleUrl: './cwe-ranking.component.css',
 })
 export class CweRankingComponent {
-  @Input() ranking: Array<{ cwe: string; count: number }> = [];
+  @Input() ranking: Array<{ cwe: string; count: number; repos_count?: number }> = [];
+
+  get maxCount(): number {
+    return Math.max(0, ...this.ranking.map((item) => item.count));
+  }
+
+  width(count: number): string {
+    if (!this.maxCount) return '0%';
+    return `${(count / this.maxCount) * 100}%`;
+  }
 }
