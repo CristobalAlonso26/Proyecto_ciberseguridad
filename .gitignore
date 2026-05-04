@@ -94,3 +94,4 @@ yarn-error.log*
 
 # Local backups
 data_nodejs_test/data/results/.analysis_state.json
+visualizer/src/assets/analysis.json
