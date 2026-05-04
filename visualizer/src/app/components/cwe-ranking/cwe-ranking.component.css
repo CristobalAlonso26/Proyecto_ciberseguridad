@@ -8,3 +8,22 @@ li { color: #e5e7eb; display: flex; justify-content: space-between; gap: 10px; p
 .bar i { display: block; height: 100%; background: linear-gradient(90deg, #22d3ee, #14b8a6); }
 .right { text-align: right; }
 small { color: #94a3b8; display: block; }
+
+.toggle-btn {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 6px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+  color: #94a3b8;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.toggle-btn:hover {
+  border-color: #334155;
+  color: #e2e8f0;
+}

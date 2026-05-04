@@ -5,7 +5,7 @@
   <div class="filters">
     <label>
       Repositorio
-      <select [(ngModel)]="selectedRepository">
+      <select [(ngModel)]="selectedRepository" (ngModelChange)="onFilterChange()">
         <option value="all">Todos</option>
         @for (repo of repositories; track repo) {
           <option [value]="repo">{{ repo }}</option>
@@ -15,7 +15,7 @@
 
     <label>
       Severidad
-      <select [(ngModel)]="selectedSeverity">
+      <select [(ngModel)]="selectedSeverity" (ngModelChange)="onFilterChange()">
         <option value="all">Todas</option>
         @for (severity of severities; track severity) {
           <option [value]="severity">{{ severity }}</option>
@@ -25,7 +25,7 @@
 
     <label>
       Buscar
-      <input [(ngModel)]="search" type="text" placeholder="ID, artifact, CWE, location" />
+      <input [(ngModel)]="search" type="text" placeholder="ID, artifact, CWE, location" (ngModelChange)="onFilterChange()" />
     </label>
   </div>
 
@@ -34,6 +34,7 @@
   } @else if (!filteredRows.length) {
     <p class="empty">No hay vulnerabilidades con estos filtros.</p>
   } @else {
+    <p class="result-count">{{ filteredRows.length }} resultado{{ filteredRows.length > 1 ? 's' : '' }}</p>
     <div class="table-wrap">
       <table>
         <thead>
@@ -50,7 +51,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (item of filteredRows; track item.repository + item.id + item.location) {
+          @for (item of pagedRows; track item.repository + item.id + item.location) {
             <tr>
               <td><span class="repo-chip">{{ item.repository }}</span></td>
               <td [title]="item.id"><code>{{ truncate(item.id, 24) }}</code></td>
@@ -66,5 +67,15 @@
         </tbody>
       </table>
     </div>
+
+    @if (totalPages > 1) {
+      <nav class="pagination">
+        <button type="button" [disabled]="currentPage === 1" (click)="prevPage()">‹</button>
+        @for (page of pageNumbers; track page) {
+          <button type="button" [class.active]="page === currentPage" (click)="goToPage(page)">{{ page }}</button>
+        }
+        <button type="button" [disabled]="currentPage === totalPages" (click)="nextPage()">›</button>
+      </nav>
+    }
   }
 </section>

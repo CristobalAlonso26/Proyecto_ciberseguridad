@@ -4,7 +4,7 @@
     <p class="empty">No hay debilidades comunes registradas.</p>
   } @else {
     <ol>
-      @for (item of ranking; track item.cwe; let i = $index) {
+      @for (item of visibleRanking; track item.cwe; let i = $index) {
         <li [class.top]="i === 0">
           <div class="left">
             <span>{{ item.cwe }}</span>
@@ -17,5 +17,10 @@
         </li>
       }
     </ol>
+    @if (hasMore) {
+      <button type="button" class="toggle-btn" (click)="toggle()">
+        {{ showAll ? 'Mostrar menos' : 'Mostrar todos (' + ranking.length + ')' }}
+      </button>
+    }
   }
 </section>

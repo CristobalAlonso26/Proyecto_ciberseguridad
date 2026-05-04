@@ -11,6 +11,9 @@ import { CommonModule } from '@angular/common';
 export class CweRankingComponent {
   @Input() ranking: Array<{ cwe: string; count: number; repos_count?: number }> = [];
 
+  readonly defaultLimit = 10;
+  showAll = false;
+
   get maxCount(): number {
     return Math.max(0, ...this.ranking.map((item) => item.count));
   }
@@ -18,5 +21,17 @@ export class CweRankingComponent {
   width(count: number): string {
     if (!this.maxCount) return '0%';
     return `${(count / this.maxCount) * 100}%`;
+  }
+
+  get visibleRanking() {
+    return this.showAll ? this.ranking : this.ranking.slice(0, this.defaultLimit);
+  }
+
+  get hasMore() {
+    return this.ranking.length > this.defaultLimit;
+  }
+
+  toggle(): void {
+    this.showAll = !this.showAll;
   }
 }

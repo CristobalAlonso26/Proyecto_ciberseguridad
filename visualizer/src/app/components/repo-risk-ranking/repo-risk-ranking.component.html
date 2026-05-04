@@ -4,7 +4,7 @@
     <p class="empty">Sin datos de riesgo.</p>
   } @else {
     <ol>
-      @for (repo of ranking; track repo.name; let i = $index) {
+      @for (repo of visibleRanking; track repo.name; let i = $index) {
         <li [class.top]="i === 0">
           <div class="title-row">
             <span>{{ i + 1 }}. {{ repo.name }}</span>
@@ -19,5 +19,10 @@
         </li>
       }
     </ol>
+    @if (hasMore) {
+      <button type="button" class="toggle-btn" (click)="toggle()">
+        {{ showAll ? 'Mostrar menos' : 'Mostrar todos (' + ranking.length + ')' }}
+      </button>
+    }
   }
 </section>

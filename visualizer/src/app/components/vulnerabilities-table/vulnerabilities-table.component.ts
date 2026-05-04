@@ -16,6 +16,9 @@ export class VulnerabilitiesTableComponent {
   selectedSeverity = 'all';
   search = '';
 
+  readonly pageSize = 25;
+  currentPage = 1;
+
   get repositories(): string[] {
     return Array.from(new Set(this.rows.map((x) => x.repository))).sort();
   }
@@ -37,6 +40,43 @@ export class VulnerabilitiesTableComponent {
         row.location?.toLowerCase().includes(q);
       return matchesRepo && matchesSeverity && matchesSearch;
     });
+  }
+
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.filteredRows.length / this.pageSize));
+  }
+
+  get pagedRows(): VulnerabilityRow[] {
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.filteredRows.slice(start, start + this.pageSize);
+  }
+
+  get pageNumbers(): number[] {
+    const pages: number[] = [];
+    const maxVisible = 5;
+    let start = Math.max(1, this.currentPage - Math.floor(maxVisible / 2));
+    const end = Math.min(this.totalPages, start + maxVisible - 1);
+    start = Math.max(1, end - maxVisible + 1);
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+    return pages;
+  }
+
+  goToPage(page: number): void {
+    this.currentPage = page;
+  }
+
+  prevPage(): void {
+    if (this.currentPage > 1) this.currentPage--;
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) this.currentPage++;
+  }
+
+  onFilterChange(): void {
+    this.currentPage = 1;
   }
 
   severityClass(severity: string): string {
