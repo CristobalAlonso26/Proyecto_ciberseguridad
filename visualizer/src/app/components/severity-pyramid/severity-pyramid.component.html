@@ -1,0 +1,12 @@
+<section class="panel">
+  <h3>Pirámide de severidad por repositorio</h3>
+  <p class="subtitle">Distribución apilada Critical/High/Medium/Low por repo.</p>
+
+  @if (!repositories.length) {
+    <p class="empty">No hay repositorios para mostrar.</p>
+  } @else {
+    <div class="chart-wrap">
+      <canvas baseChart [type]="'bar'" [data]="chartData" [options]="chartOptions"></canvas>
+    </div>
+  }
+</section>

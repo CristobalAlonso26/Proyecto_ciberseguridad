@@ -1,30 +1,50 @@
-import { Component, Input } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
+import { Component, Input, OnChanges } from '@angular/core';
+import { BaseChartDirective } from 'ng2-charts';
+import { ChartConfiguration } from 'chart.js';
 import { RepositoryAnalysis } from '../../models/analysis.model';
 
 @Component({
   selector: 'app-repo-comparison-chart',
   standalone: true,
-  imports: [DecimalPipe],
+  imports: [BaseChartDirective],
   templateUrl: './repo-comparison-chart.component.html',
   styleUrl: './repo-comparison-chart.component.css',
 })
-export class RepoComparisonChartComponent {
+export class RepoComparisonChartComponent implements OnChanges {
   @Input() repositories: RepositoryAnalysis[] = [];
 
-  maxFor(type: 'grype' | 'codeql' | 'cicd' | 'risk'): number {
-    const values = this.repositories.map((repo) => {
-      if (type === 'grype') return repo.vulnerabilities.total ?? 0;
-      if (type === 'codeql') return repo.codeql.total_issues ?? 0;
-      if (type === 'cicd') return repo.cicd?.total_findings ?? 0;
-      return repo.metrics.risk_score ?? 0;
-    });
-    return Math.max(0, ...values);
-  }
+  chartData: ChartConfiguration<'bar'>['data'] = { labels: [], datasets: [] };
 
-  width(value: number, type: 'grype' | 'codeql' | 'cicd' | 'risk'): string {
-    const max = this.maxFor(type);
-    if (!max) return '0%';
-    return `${Math.max(4, (value / max) * 100)}%`;
+  readonly chartOptions: ChartConfiguration<'bar'>['options'] = {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x: { ticks: { color: '#cbd5e1' } },
+      y: { beginAtZero: true, ticks: { color: '#cbd5e1' } },
+    },
+    plugins: {
+      legend: { labels: { color: '#cbd5e1' } },
+      tooltip: { mode: 'index', intersect: false },
+    },
+  };
+
+  ngOnChanges(): void {
+    this.chartData = {
+      labels: this.repositories.map((repo) => repo.name),
+      datasets: [
+        {
+          label: 'Dependency (Grype)',
+          data: this.repositories.map((repo) => repo.vulnerabilities.total ?? 0),
+          backgroundColor: '#F58518',
+          borderRadius: 4,
+        },
+        {
+          label: 'CodeQL',
+          data: this.repositories.map((repo) => repo.codeql.total_issues ?? 0),
+          backgroundColor: '#22D3EE',
+          borderRadius: 4,
+        },
+      ],
+    };
   }
 }

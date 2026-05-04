@@ -81,6 +81,56 @@
   gap: 16px;
 }
 
+.filters {
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+select {
+  margin-left: 8px;
+  background: #0f172a;
+  color: #e2e8f0;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 6px 10px;
+}
+
+.pill-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pill,
+.refresh {
+  border: 1px solid #334155;
+  background: #0f172a;
+  color: #cbd5e1;
+  border-radius: 999px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.pill.active {
+  border-color: #22d3ee;
+  color: #67e8f9;
+}
+
+.severities .check {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: 8px;
+}
+
 @media (max-width: 768px) {
   .container { padding: 16px; }
   .hero { flex-direction: column; }

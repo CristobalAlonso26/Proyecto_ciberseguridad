@@ -1,0 +1,19 @@
+.panel {
+  background: rgba(17, 24, 39, 0.88);
+  border: 1px solid #1e293b;
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.subtitle {
+  margin: 0 0 12px;
+  color: #94a3b8;
+}
+
+.chart-wrap {
+  min-height: 320px;
+}
+
+.empty {
+  color: #94a3b8;
+}

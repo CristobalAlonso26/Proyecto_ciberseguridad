@@ -5,6 +5,7 @@
       <h1>Cybersecurity Analysis Dashboard</h1>
       <p class="subtitle">Miner → Analyzer → Visualizer</p>
       <p class="meta">Generado: <strong>{{ formattedGeneratedAt }}</strong> · Fuente: <code>assets/analysis.json</code></p>
+      <p class="meta">Estado refresh: <strong>{{ refreshState }}</strong></p>
     </div>
     <div class="badges">
       <span class="badge">Syft</span>
@@ -21,25 +22,72 @@
   } @else if (isEmpty) {
     <section class="state empty panel">No hay datos de análisis disponibles.</section>
   } @else {
+    <section class="panel filters">
+      <div class="filter-row">
+        <label>
+          Repositorio
+          <select [(ngModel)]="selectedRepository">
+            <option value="all">Todos</option>
+            @for (repo of availableRepositories; track repo) {
+              <option [value]="repo">{{ repo }}</option>
+            }
+          </select>
+        </label>
+
+        <div class="pill-group">
+          <span>Tipo de análisis</span>
+          <button type="button" class="pill" [class.active]="hasType('dependency')" (click)="toggleAnalysisType('dependency')">Dependency</button>
+          <button type="button" class="pill" [class.active]="hasType('codeql')" (click)="toggleAnalysisType('codeql')">CodeQL</button>
+          <button type="button" class="pill" [class.active]="hasType('cicd')" (click)="toggleAnalysisType('cicd')">CI/CD</button>
+        </div>
+
+        <button type="button" class="refresh" (click)="refreshData()">Actualizar</button>
+      </div>
+
+      <div class="filter-row severities">
+        <span>Severidad</span>
+        @for (sev of knownSeverities; track sev) {
+          <label class="check">
+            <input type="checkbox" [checked]="enabledSeverities.includes(sev)" (change)="toggleSeverity(sev)" /> {{ sev }}
+          </label>
+        }
+      </div>
+    </section>
+
     <app-executive-insights [insights]="executiveInsights"></app-executive-insights>
     <app-kpi-cards [cards]="kpis"></app-kpi-cards>
     <app-validation-status [validation]="validation"></app-validation-status>
 
     <section class="grid-2">
-      <app-severity-chart [distribution]="analysis!.cross_repo_analysis.severity_distribution"></app-severity-chart>
+      <app-severity-chart [distribution]="filteredSeverityDistribution"></app-severity-chart>
       <app-repo-risk-ranking [ranking]="normalizedRiskRanking"></app-repo-risk-ranking>
     </section>
 
-    <app-repo-severity-matrix [repositories]="analysis!.repositories"></app-repo-severity-matrix>
+    @if (hasType('dependency')) {
+      <app-severity-pyramid [repositories]="filteredRepositories"></app-severity-pyramid>
+      <app-repo-severity-matrix [repositories]="filteredRepositories"></app-repo-severity-matrix>
+      <app-artifact-type-heatmap [repositories]="filteredRepositories"></app-artifact-type-heatmap>
+    }
 
-    <section class="grid-2">
-      <app-codeql-level-summary [repositories]="analysis!.repositories"></app-codeql-level-summary>
-      <app-cwe-ranking [ranking]="cweRanking"></app-cwe-ranking>
-    </section>
+    @if (hasType('codeql') || hasType('dependency')) {
+      <section class="grid-2">
+        @if (hasType('codeql')) {
+          <app-codeql-level-summary [repositories]="filteredRepositories"></app-codeql-level-summary>
+        }
+        @if (hasType('dependency')) {
+          <app-cwe-ranking [ranking]="cweRanking"></app-cwe-ranking>
+        }
+      </section>
+    }
 
-    <app-artifact-type-heatmap [repositories]="analysis!.repositories"></app-artifact-type-heatmap>
-    <app-repo-comparison-chart [repositories]="analysis!.repositories"></app-repo-comparison-chart>
-    <app-cicd-findings-table [rows]="cicdRows"></app-cicd-findings-table>
-    <app-vulnerabilities-table [rows]="vulnerabilityRows"></app-vulnerabilities-table>
+    @if (hasType('dependency') || hasType('codeql')) {
+      <app-repo-comparison-chart [repositories]="filteredRepositories"></app-repo-comparison-chart>
+    }
+    @if (hasType('cicd')) {
+      <app-cicd-findings-table [rows]="cicdRows"></app-cicd-findings-table>
+    }
+    @if (hasType('dependency')) {
+      <app-vulnerabilities-table [rows]="vulnerabilityRows"></app-vulnerabilities-table>
+    }
   }
 </main>

@@ -1,48 +1,33 @@
 <section class="panel">
-  <h3>Comparación de fuentes de hallazgo</h3>
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Repositorio</th>
-          <th>Vulns Grype</th>
-          <th>Issues CodeQL</th>
-          <th>Hallazgos CI/CD</th>
-          <th>Fixes</th>
-          <th>Risk score (0-10)</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (repo of repositories; track repo.name) {
+  <h3>CodeQL vs Dependency por repositorio</h3>
+  <p class="subtitle">Comparación agrupada entre vulnerabilidades de dependencias e issues de análisis estático.</p>
+
+  @if (!repositories.length) {
+    <p class="empty">No hay repositorios para mostrar.</p>
+  } @else {
+    <div class="chart-wrap">
+      <canvas baseChart [type]="'bar'" [data]="chartData" [options]="chartOptions"></canvas>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
           <tr>
-            <td><span class="repo-chip">{{ repo.name }}</span></td>
-            <td>
-              <div class="metric">
-                <span>{{ repo.vulnerabilities.total }}</span>
-                <div class="mini-bar"><i class="grype" [style.width]="width(repo.vulnerabilities.total, 'grype')"></i></div>
-              </div>
-            </td>
-            <td>
-              <div class="metric">
-                <span>{{ repo.codeql.total_issues }}</span>
-                <div class="mini-bar"><i class="codeql" [style.width]="width(repo.codeql.total_issues, 'codeql')"></i></div>
-              </div>
-            </td>
-            <td>
-              <div class="metric">
-                <span>{{ repo.cicd?.total_findings ?? 0 }}</span>
-                <div class="mini-bar"><i class="cicd" [style.width]="width(repo.cicd?.total_findings ?? 0, 'cicd')"></i></div>
-              </div>
-            </td>
-            <td>{{ repo.vulnerabilities.with_fix_available ?? 0 }}</td>
-            <td>
-              <strong>{{ repo.metrics.risk_score | number: '1.0-2' }}</strong>
-              <div class="mini-bar"><i class="risk" [style.width]="width(repo.metrics.risk_score, 'risk')"></i></div>
-              <small>(raw {{ (repo.metrics.risk_score_raw ?? repo.metrics.risk_score) | number: '1.0-4' }})</small>
-            </td>
+            <th>Repositorio</th>
+            <th>Dependency</th>
+            <th>CodeQL</th>
           </tr>
-        }
-      </tbody>
-    </table>
-  </div>
+        </thead>
+        <tbody>
+          @for (repo of repositories; track repo.name) {
+            <tr>
+              <td><span class="repo-chip">{{ repo.name }}</span></td>
+              <td>{{ repo.vulnerabilities.total }}</td>
+              <td>{{ repo.codeql.total_issues }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
 </section>

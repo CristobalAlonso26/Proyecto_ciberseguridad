@@ -5,9 +5,11 @@
   padding: 14px;
 }
 
-.table-wrap {
-  overflow-x: auto;
-}
+.subtitle { color: #94a3b8; margin-top: 0; }
+
+.chart-wrap { min-height: 300px; margin-bottom: 14px; }
+
+.table-wrap { overflow-x: auto; }
 
 table {
   width: 100%;
@@ -23,7 +25,8 @@ th, td {
 th { color: #9ca3af; }
 td { color: #e5e7eb; }
 tbody tr:hover { background: rgba(30, 41, 59, 0.42); }
-small { display: block; color: #94a3b8; }
+
+.empty { color: #94a3b8; }
 
 .repo-chip {
   border: 1px solid #334155;
@@ -32,11 +35,3 @@ small { display: block; color: #94a3b8; }
   color: #67e8f9;
   font-size: 0.78rem;
 }
-
-.metric { display: grid; gap: 4px; min-width: 120px; }
-.mini-bar { height: 6px; background: #0f172a; border: 1px solid #334155; border-radius: 999px; overflow: hidden; }
-.mini-bar i { display: block; height: 100%; }
-.grype { background: #f97316; }
-.codeql { background: #22d3ee; }
-.cicd { background: #a78bfa; }
-.risk { background: #14b8a6; }
