@@ -85,5 +85,13 @@ RUN echo "=== Verificacion de herramientas ===" \
 ENV UV_LINK_MODE=copy
 ENV UV_COMPILE_BYTECODE=1
 ENV PYTHONUNBUFFERED=1
+ENV PATH="/tmp/project/.venv/bin:${PATH}"
+
+# ----------------------------------------------------------
+# 10. Instalar dependencias Python del proyecto
+# ----------------------------------------------------------
+COPY pyproject.toml uv.lock README.md /tmp/project/
+WORKDIR /tmp/project
+RUN uv sync --frozen
 
 WORKDIR /workspace

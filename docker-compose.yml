@@ -45,13 +45,12 @@ services:
       dockerfile: .devcontainer/Dockerfile
     working_dir: /workspace
     command: >
-      jupyter lab
-      --ip=0.0.0.0
-      --port=8888
-      --no-browser
-      --allow-root
-      --NotebookApp.token=''
-      --notebook-dir=/workspace
+      bash -c "
+        echo 'Generating analysis.json...' &&
+        uv run python -m analyzer.generate_analysis &&
+        echo 'Starting Jupyter Lab...' &&
+        jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root --NotebookApp.token='' --notebook-dir=/workspace
+      "
     volumes:
       - .:/workspace:cached
     ports:
