@@ -60,18 +60,17 @@ jq '.metadata' data/results/analysis.json
 jq '.cross_repo_analysis' data/results/analysis.json
 ```
 
-### 5. Preparar y ejecutar Visualizer
+### 5. Ejecutar Visualizer
 
 ```bash
-./scripts/prepare_visualizer_data.sh
-
 cd visualizer
 npm install
-npm run build
 npm run start
 ```
 
 El dashboard queda disponible en `http://localhost:4200/`.
+
+> **Nota:** Si `visualizer/src/assets/analysis.json` no existe, se copia automáticamente desde `data/results/analysis.json` al iniciar el contenedor con Docker Compose. En ejecución local, ejecuta `./scripts/prepare_visualizer_data.sh` manualmente.
 
 ---
 
@@ -98,15 +97,17 @@ Si no quieres instalar las herramientas manualmente, abre el proyecto en VS Code
 uv sync
 uv run python -m miner
 uv run python analyzer/generate_analysis.py
-./scripts/prepare_visualizer_data.sh
 ```
 
 ## Usar con Docker Compose
 
 ```bash
 docker compose run --rm miner
-docker compose up visualizer
+docker compose up analyzer       # Jupyter Lab en http://localhost:8888
+docker compose up visualizer     # Dashboard en http://localhost:4200
 ```
+
+> El servicio `visualizer` copia automáticamente `analysis.json` si no existe en `src/assets/`. No es necesario ejecutar el script manualmente.
 
 ## Estructura
 

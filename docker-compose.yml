@@ -59,20 +59,26 @@ services:
     restart: unless-stopped
 
   # ----------------------------------------------------------
-  # Visualizer: dashboard estatico de resultados
+  # Visualizer: dashboard Angular con ng serve
   # ----------------------------------------------------------
   visualizer:
     build:
       context: .
       dockerfile: .devcontainer/Dockerfile
-    working_dir: /workspace
+    working_dir: /workspace/visualizer
     command: >
-      python -m http.server 4173
-      --directory /workspace/visualizer
+      bash -c "
+        npm install &&
+        if [ ! -f src/assets/analysis.json ]; then
+          echo 'Copying analysis.json...' &&
+          bash /workspace/scripts/prepare_visualizer_data.sh;
+        fi &&
+        npx ng serve --host 0.0.0.0 --port 4200
+      "
     volumes:
-      - .:/workspace:ro
+      - .:/workspace:cached
     ports:
-      - "4173:4173"
+      - "4200:4200"
     restart: unless-stopped
     profiles:
       - visualizer
