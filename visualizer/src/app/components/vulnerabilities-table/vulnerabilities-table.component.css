@@ -1,7 +1,7 @@
 .panel {
-  background: #111827;
-  border: 1px solid #374151;
-  border-radius: 10px;
+  background: rgba(17, 24, 39, 0.88);
+  border: 1px solid #1e293b;
+  border-radius: 14px;
   padding: 14px;
 }
 
@@ -16,14 +16,15 @@ label {
   flex-direction: column;
   gap: 6px;
   color: #d1d5db;
+  font-size: 0.82rem;
 }
 
 select {
   background: #0f172a;
   color: #f8fafc;
   border: 1px solid #334155;
-  border-radius: 6px;
-  padding: 6px;
+  border-radius: 8px;
+  padding: 8px;
 }
 
 .table-wrap {
@@ -37,7 +38,7 @@ table {
 }
 
 th, td {
-  border-bottom: 1px solid #374151;
+  border-bottom: 1px solid #1e293b;
   padding: 8px;
   text-align: left;
   vertical-align: top;
@@ -45,5 +46,23 @@ th, td {
 
 th { color: #9ca3af; }
 td { color: #e5e7eb; }
+tbody tr:hover { background: rgba(30, 41, 59, 0.45); }
 
-.empty { color: #93c5fd; }
+.subtitle, .empty { color: #94a3b8; }
+
+.repo-chip, .artifact-chip, .sev, .fix {
+  border: 1px solid #334155;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  padding: 2px 8px;
+}
+
+.repo-chip { color: #67e8f9; }
+.artifact-chip { color: #5eead4; }
+.fix { color: #22c55e; border-color: rgba(34, 197, 94, 0.5); }
+.no-fix { color: #ef4444; border-color: rgba(239, 68, 68, 0.5); }
+
+.critical { color: #fecaca; border-color: rgba(220, 38, 38, 0.6); }
+.high { color: #fca5a5; border-color: rgba(239, 68, 68, 0.5); }
+.medium { color: #fcd34d; border-color: rgba(245, 158, 11, 0.5); }
+.low { color: #86efac; border-color: rgba(34, 197, 94, 0.5); }

@@ -3,13 +3,13 @@
   @if (!entries.length) {
     <p class="empty">Sin issues CodeQL por nivel.</p>
   } @else {
-    <table>
-      <thead><tr><th>Nivel</th><th>Conteo</th></tr></thead>
-      <tbody>
-        @for (entry of entries; track entry.level) {
-          <tr><td>{{ entry.level }}</td><td>{{ entry.count }}</td></tr>
-        }
-      </tbody>
-    </table>
+    <div class="chips">
+      @for (entry of entries; track entry.level) {
+        <article class="chip" [title]="entry.level + ': ' + entry.count">
+          <span class="level">{{ entry.level }}</span>
+          <strong>{{ entry.count }}</strong>
+        </article>
+      }
+    </div>
   }
 </section>

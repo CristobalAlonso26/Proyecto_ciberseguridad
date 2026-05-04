@@ -1,12 +1,13 @@
 <section class="panel">
   <h3>Distribución por severidad</h3>
+  <p class="subtitle">Conteo y proporción global de vulnerabilidades detectadas por Grype.</p>
   @for (entry of entries; track entry.key) {
     <div class="row">
-      <span class="name">{{ entry.key }}</span>
+      <span class="name" [class]="'name ' + entry.key.toLowerCase()">{{ entry.key }}</span>
       <div class="bar-wrap">
         <div class="bar" [style.width]="width(entry.value)" [class]="'bar ' + entry.key.toLowerCase()"></div>
       </div>
-      <span class="value">{{ entry.value }}</span>
+      <span class="value">{{ entry.value }} · {{ percent(entry.value) }}</span>
     </div>
   }
 </section>

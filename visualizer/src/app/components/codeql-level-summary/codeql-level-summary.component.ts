@@ -12,6 +12,8 @@ export class CodeqlLevelSummaryComponent {
   @Input() byLevel: Record<string, number> = {};
 
   get entries(): Array<{ level: string; count: number }> {
-    return Object.entries(this.byLevel).map(([level, count]) => ({ level, count }));
+    return Object.entries(this.byLevel)
+      .map(([level, count]) => ({ level, count }))
+      .sort((a, b) => b.count - a.count);
   }
 }

@@ -1,5 +1,6 @@
 <section class="panel">
   <h3>Hallazgos CI/CD</h3>
+  <p class="subtitle">Detecciones sobre workflows y prácticas de pipeline.</p>
 
   @if (!rows.length) {
     <p class="empty">Sin hallazgos CI/CD.</p>
@@ -16,8 +17,8 @@
         <tbody>
           @for (item of rows; track item.repository + item.workflow + item.issue) {
             <tr>
-              <td>{{ item.repository }}</td>
-              <td>{{ item.workflow }}</td>
+              <td><span class="repo-chip">{{ item.repository }}</span></td>
+              <td><span class="workflow-chip">{{ item.workflow }}</span></td>
               <td>{{ item.issue }}</td>
             </tr>
           }

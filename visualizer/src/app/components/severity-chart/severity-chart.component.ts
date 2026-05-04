@@ -10,8 +10,13 @@ export class SeverityChartComponent {
   @Input() distribution: Record<string, number> = {};
 
   get entries() {
-    const order = ['Critical', 'High', 'Medium', 'Low'];
-    return order.map((key) => ({ key, value: this.distribution[key] ?? 0 }));
+    const preferredOrder = ['Critical', 'High', 'Medium', 'Low'];
+    const keys = Object.keys(this.distribution ?? {});
+    const ordered = [
+      ...preferredOrder.filter((k) => keys.includes(k)),
+      ...keys.filter((k) => !preferredOrder.includes(k)).sort(),
+    ];
+    return ordered.map((key) => ({ key, value: this.distribution[key] ?? 0 }));
   }
 
   get total() {
@@ -21,5 +26,10 @@ export class SeverityChartComponent {
   width(value: number): string {
     if (!this.total) return '0%';
     return `${(value / this.total) * 100}%`;
+  }
+
+  percent(value: number): string {
+    if (!this.total) return '0%';
+    return `${((value / this.total) * 100).toFixed(1)}%`;
   }
 }

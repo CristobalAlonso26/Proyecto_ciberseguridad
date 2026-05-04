@@ -1,9 +1,9 @@
-<section class="panel" [class.ok]="!validation.warnings.length" [class.warn]="validation.warnings.length > 0">
+<section class="panel" [class.ok]="!hasWarnings" [class.warn]="hasWarnings">
   <h3>Validación de artefactos raw</h3>
-  @if (!validation.warnings.length) {
-    <p>Estado: OK · 0 warnings · 0 archivos inválidos.</p>
+  @if (!hasWarnings) {
+    <p class="status">Estado: <strong>OK</strong> · 0 warnings · 0 invalid files</p>
   } @else {
-    <p>Warnings: {{ validation.warnings.length }} · Archivos inválidos: {{ validation.invalid_files.length }}</p>
+    <p class="status">Estado: <strong>WARNING</strong> · {{ validation.warnings.length }} warnings · {{ validation.invalid_files.length }} invalid files</p>
     <ul>
       @for (item of validation.invalid_files.slice(0, 5); track item) {
         <li>{{ item }}</li>

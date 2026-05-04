@@ -1,11 +1,19 @@
 <section class="panel">
   <h3>Ranking de repositorios por riesgo</h3>
-  <ol>
-    @for (repo of ranking; track repo.name) {
-      <li>
-        <span>{{ repo.name }}</span>
-        <strong>{{ repo.risk_score | number: '1.0-2' }} / 10</strong>
-      </li>
-    }
-  </ol>
+  @if (!ranking.length) {
+    <p class="empty">Sin datos de riesgo.</p>
+  } @else {
+    <ol>
+      @for (repo of ranking; track repo.name; let i = $index) {
+        <li [class.top]="i === 0">
+          <div class="title-row">
+            <span>{{ i + 1 }}. {{ repo.name }}</span>
+            <strong>{{ repo.risk_score | number: '1.0-2' }} / 10</strong>
+          </div>
+          <div class="bar-wrap"><div class="bar" [style.width]="width(repo.risk_score)"></div></div>
+          <small>raw {{ repo.risk_score_raw | number: '1.0-4' }}</small>
+        </li>
+      }
+    </ol>
+  }
 </section>

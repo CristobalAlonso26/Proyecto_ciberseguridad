@@ -24,4 +24,17 @@ export class ArtifactTypeHeatmapComponent {
     const source = repo.vulnerabilities.by_type ?? repo.vulnerabilities.by_artifact_type ?? {};
     return source[type] ?? 0;
   }
+
+  get maxValue(): number {
+    const values = this.repositories.flatMap((repo) =>
+      this.columns.map((column) => this.count(repo, column))
+    );
+    return Math.max(0, ...values);
+  }
+
+  cellBackground(value: number): string {
+    if (!this.maxValue) return 'rgba(15, 23, 42, 0.4)';
+    const alpha = 0.18 + (value / this.maxValue) * 0.72;
+    return `rgba(34, 211, 238, ${alpha.toFixed(2)})`;
+  }
 }

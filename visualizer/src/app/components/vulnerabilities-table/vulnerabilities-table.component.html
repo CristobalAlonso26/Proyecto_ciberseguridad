@@ -1,5 +1,6 @@
 <section class="panel">
-  <h3>Vulnerabilidades principales</h3>
+  <h3>Explorador de vulnerabilidades</h3>
+  <p class="subtitle">Explora las vulnerabilidades detectadas por Grype y prioriza por severidad, fix disponible y repositorio.</p>
 
   <div class="filters">
     <label>
@@ -46,15 +47,15 @@
         <tbody>
           @for (item of filteredRows; track item.repository + item.id + item.location) {
             <tr>
-              <td>{{ item.repository }}</td>
-              <td>{{ item.id }}</td>
-              <td>{{ item.severity }}</td>
-              <td>{{ item.artifact }}</td>
+              <td><span class="repo-chip">{{ item.repository }}</span></td>
+              <td [title]="item.id">{{ truncate(item.id, 24) }}</td>
+              <td><span class="sev" [class]="'sev ' + severityClass(item.severity)">{{ item.severity }}</span></td>
+              <td><span class="artifact-chip">{{ item.artifact }}</span></td>
               <td>{{ item.artifact_version }}</td>
               <td>{{ item.cwe || '-' }}</td>
-              <td>{{ item.fix_available ? 'Sí' : 'No' }}</td>
+              <td><span class="fix" [class.no-fix]="!item.fix_available">{{ item.fix_available ? 'Fix' : 'No Fix' }}</span></td>
               <td>{{ item.fix_version || '-' }}</td>
-              <td>{{ item.location || '-' }}</td>
+              <td [title]="item.location || '-'">{{ truncate(item.location, 30) }}</td>
             </tr>
           }
         </tbody>

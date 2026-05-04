@@ -1,7 +1,7 @@
 .panel {
-  background: #111827;
-  border: 1px solid #374151;
-  border-radius: 10px;
+  background: rgba(17, 24, 39, 0.9);
+  border: 1px solid #1e293b;
+  border-radius: 14px;
   padding: 14px;
 }
 
@@ -12,7 +12,7 @@ h3 {
 
 .row {
   display: grid;
-  grid-template-columns: 80px 1fr 40px;
+  grid-template-columns: 100px 1fr 100px;
   align-items: center;
   gap: 10px;
   margin-bottom: 10px;
@@ -27,11 +27,21 @@ h3 {
 
 .bar {
   height: 100%;
+  box-shadow: 0 0 12px rgba(34, 211, 238, 0.25);
 }
 
 .critical { background: #dc2626; }
-.high { background: #ea580c; }
+.high { background: #ef4444; }
 .medium { background: #d97706; }
 .low { background: #16a34a; }
 
-.name, .value { color: #d1d5db; }
+.name, .value { color: #d1d5db; font-size: 0.85rem; }
+.subtitle { margin: 4px 0 12px; color: #94a3b8; }
+
+.name {
+  display: inline-flex;
+  border: 1px solid #1e293b;
+  border-radius: 999px;
+  padding: 2px 8px;
+  justify-content: center;
+}

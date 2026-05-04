@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 export interface ExecutiveInsight {
   label: string;
   value: string | number;
+  secondary?: string;
+  accent?: string;
 }
 
 @Component({

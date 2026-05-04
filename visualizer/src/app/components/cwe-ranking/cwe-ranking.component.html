@@ -4,8 +4,8 @@
     <p class="empty">No hay debilidades comunes registradas.</p>
   } @else {
     <ol>
-      @for (item of ranking; track item.cwe) {
-        <li><span>{{ item.cwe }}</span><strong>{{ item.count }}</strong></li>
+      @for (item of ranking; track item.cwe; let i = $index) {
+        <li [class.top]="i === 0"><span>{{ item.cwe }}</span><strong>{{ item.count }}</strong></li>
       }
     </ol>
   }

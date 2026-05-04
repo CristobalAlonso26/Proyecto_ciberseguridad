@@ -1,7 +1,7 @@
 .panel {
-  background: #111827;
-  border: 1px solid #374151;
-  border-radius: 10px;
+  background: rgba(17, 24, 39, 0.88);
+  border: 1px solid #1e293b;
+  border-radius: 14px;
   padding: 14px;
 }
 
@@ -16,7 +16,7 @@ table {
 }
 
 th, td {
-  border-bottom: 1px solid #374151;
+  border-bottom: 1px solid #1e293b;
   padding: 8px;
   text-align: left;
   vertical-align: top;
@@ -24,5 +24,16 @@ th, td {
 
 th { color: #9ca3af; }
 td { color: #e5e7eb; }
+tbody tr:hover { background: rgba(30, 41, 59, 0.45); }
 
-.empty { color: #93c5fd; }
+.empty, .subtitle { color: #94a3b8; }
+
+.repo-chip, .workflow-chip {
+  border: 1px solid #334155;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  padding: 2px 8px;
+}
+
+.repo-chip { color: #67e8f9; }
+.workflow-chip { color: #5eead4; }

@@ -30,4 +30,13 @@ export class VulnerabilitiesTableComponent {
       return matchesRepo && matchesSeverity;
     });
   }
+
+  severityClass(severity: string): string {
+    return severity?.toLowerCase?.() ?? 'unknown';
+  }
+
+  truncate(value: string | undefined, size = 28): string {
+    if (!value) return '-';
+    return value.length > size ? `${value.slice(0, size)}…` : value;
+  }
 }

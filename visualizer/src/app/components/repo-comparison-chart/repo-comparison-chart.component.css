@@ -1,7 +1,7 @@
 .panel {
-  background: #111827;
-  border: 1px solid #374151;
-  border-radius: 10px;
+  background: rgba(17, 24, 39, 0.88);
+  border: 1px solid #1e293b;
+  border-radius: 14px;
   padding: 14px;
 }
 
@@ -15,10 +15,20 @@ table {
 }
 
 th, td {
-  border-bottom: 1px solid #374151;
+  border-bottom: 1px solid #1e293b;
   text-align: left;
-  padding: 8px;
+  padding: 10px 8px;
 }
 
 th { color: #9ca3af; }
 td { color: #e5e7eb; }
+tbody tr:hover { background: rgba(30, 41, 59, 0.42); }
+small { display: block; color: #94a3b8; }
+
+.repo-chip {
+  border: 1px solid #334155;
+  border-radius: 999px;
+  padding: 2px 8px;
+  color: #67e8f9;
+  font-size: 0.78rem;
+}

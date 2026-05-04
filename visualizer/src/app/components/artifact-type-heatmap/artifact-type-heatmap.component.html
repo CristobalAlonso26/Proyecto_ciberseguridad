@@ -1,5 +1,6 @@
 <section class="panel">
   <h3>Matriz de vulnerabilidades por tipo</h3>
+  <p class="subtitle">Heatmap repo × tipo de vulnerabilidad/artifact.</p>
   @if (!repositories.length || !columns.length) {
     <p class="empty">Sin datos por tipo para mostrar.</p>
   } @else {
@@ -12,7 +13,11 @@
           @for (repo of repositories; track repo.name) {
             <tr>
               <td>{{ repo.name }}</td>
-              @for (col of columns; track col) { <td>{{ count(repo, col) }}</td> }
+              @for (col of columns; track col) {
+                <td [style.background]="cellBackground(count(repo, col))" [title]="repo.name + ' · ' + col + ': ' + count(repo, col)">
+                  {{ count(repo, col) }}
+                </td>
+              }
             </tr>
           }
         </tbody>

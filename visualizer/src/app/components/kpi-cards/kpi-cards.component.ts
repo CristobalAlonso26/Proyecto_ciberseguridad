@@ -7,5 +7,5 @@ import { Component, Input } from '@angular/core';
   styleUrl: './kpi-cards.component.css',
 })
 export class KpiCardsComponent {
-  @Input() cards: Array<{ label: string; value: string | number }> = [];
+  @Input() cards: Array<{ label: string; value: string | number; subtitle?: string; accent?: string }> = [];
 }

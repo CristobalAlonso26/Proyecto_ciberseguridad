@@ -66,13 +66,13 @@ export class App implements OnInit {
       : 0;
 
     return [
-      { label: 'Repos analizados', value: this.analysis.metadata.repos_analyzed },
-      { label: 'Total componentes', value: this.analysis.cross_repo_analysis.total_components },
-      { label: 'Total vulnerabilidades', value: this.analysis.cross_repo_analysis.total_vulnerabilities },
-      { label: 'Issues CodeQL', value: this.analysis.cross_repo_analysis.total_codeql_issues },
-      { label: 'Hallazgos CI/CD', value: this.totalCicdFindings },
-      { label: 'Fixes disponibles', value: this.totalFixesAvailable },
-      { label: 'Risk score promedio', value: avgRisk.toFixed(2) },
+      { label: 'Repos analizados', value: this.analysis.metadata.repos_analyzed, subtitle: 'Repositorios escaneados por pipeline', accent: 'cyan' },
+      { label: 'Componentes', value: this.analysis.cross_repo_analysis.total_components, subtitle: 'Inventario consolidado SBOM', accent: 'teal' },
+      { label: 'Vulnerabilidades', value: this.analysis.cross_repo_analysis.total_vulnerabilities, subtitle: 'Detectadas por Grype', accent: 'red' },
+      { label: 'Issues CodeQL', value: this.analysis.cross_repo_analysis.total_codeql_issues, subtitle: 'Hallazgos de análisis estático', accent: 'amber' },
+      { label: 'Hallazgos CI/CD', value: this.totalCicdFindings, subtitle: 'Workflows y prácticas inseguras', accent: 'amber' },
+      { label: 'Fixes disponibles', value: this.totalFixesAvailable, subtitle: 'Vulnerabilidades con remediación', accent: 'green' },
+      { label: 'Risk score promedio', value: `${avgRisk.toFixed(2)} / 10`, subtitle: 'Promedio entre repositorios', accent: 'cyan' },
     ];
   }
 
@@ -127,14 +127,18 @@ export class App implements OnInit {
     return this.analysis?.cross_repo_analysis.common_weakness_ranking ?? [];
   }
 
-  get normalizedRiskRanking(): Array<{ name: string; risk_score: number }> {
+  get normalizedRiskRanking(): Array<{ name: string; risk_score: number; risk_score_raw: number }> {
     if (!this.analysis) return [];
     return [...this.analysis.repositories]
       .sort((a, b) => (b.metrics.risk_score ?? 0) - (a.metrics.risk_score ?? 0))
-      .map((repo) => ({ name: repo.name, risk_score: repo.metrics.risk_score ?? 0 }));
+      .map((repo) => ({
+        name: repo.name,
+        risk_score: repo.metrics.risk_score ?? 0,
+        risk_score_raw: repo.metrics.risk_score_raw ?? repo.metrics.risk_score ?? 0,
+      }));
   }
 
-  get executiveInsights(): Array<{ label: string; value: string | number }> {
+  get executiveInsights(): Array<{ label: string; value: string | number; secondary: string; accent: string }> {
     if (!this.analysis) return [];
     const topRepo = this.normalizedRiskRanking[0];
     const severityEntries = Object.entries(this.analysis.cross_repo_analysis.severity_distribution ?? {});
@@ -144,12 +148,22 @@ export class App implements OnInit {
     const topCwe = this.cweRanking[0]?.cwe ?? 'N/A';
 
     return [
-      { label: 'Repositorio con mayor riesgo', value: topRepo ? `${topRepo.name} (${topRepo.risk_score.toFixed(2)})` : 'N/A' },
-      { label: 'Severidad predominante', value: dominantSeverity },
-      { label: 'Total High/Critical', value: highCritical },
-      { label: 'Total hallazgos CI/CD', value: this.totalCicdFindings },
-      { label: 'CWE más frecuente', value: topCwe },
-      { label: 'Total fixes disponibles', value: this.totalFixesAvailable },
+      {
+        label: 'Repositorio con mayor riesgo',
+        value: topRepo ? `${topRepo.name}` : 'N/A',
+        secondary: topRepo ? `Score ${topRepo.risk_score.toFixed(2)} / 10` : 'Sin datos de ranking',
+        accent: 'critical',
+      },
+      { label: 'Severidad predominante', value: dominantSeverity, secondary: 'Distribución global de Grype', accent: 'amber' },
+      { label: 'Total High/Critical', value: highCritical, secondary: 'Vulnerabilidades prioritarias', accent: 'red' },
+      { label: 'Total CI/CD findings', value: this.totalCicdFindings, secondary: 'Hallazgos de workflows', accent: 'teal' },
+      { label: 'CWE más frecuente', value: topCwe, secondary: 'Debilidad más repetida', accent: 'cyan' },
+      { label: 'Fixes disponibles', value: this.totalFixesAvailable, secondary: 'Remediación potencial inmediata', accent: 'green' },
     ];
+  }
+
+  get formattedGeneratedAt(): string {
+    if (!this.analysis?.metadata.generated_at) return 'N/A';
+    return new Date(this.analysis.metadata.generated_at).toLocaleString();
   }
 }

@@ -1,8 +1,9 @@
 <section class="kpi-grid">
   @for (card of cards; track card.label) {
-    <article class="kpi-card">
+    <article class="kpi-card" [class]="'kpi-card ' + (card.accent || 'cyan')">
       <p class="kpi-label">{{ card.label }}</p>
       <p class="kpi-value">{{ card.value }}</p>
+      <p class="kpi-subtitle">{{ card.subtitle || 'Métrica consolidada del Analyzer' }}</p>
     </article>
   }
 </section>

@@ -1,15 +1,25 @@
 <main class="container">
-  <header>
-    <h1>Cybersecurity Analysis Dashboard</h1>
-    <p>Fuente: <code>assets/analysis.json</code></p>
+  <header class="hero panel">
+    <div>
+      <p class="overline">AIDev · Security Pipeline</p>
+      <h1>Cybersecurity Analysis Dashboard</h1>
+      <p class="subtitle">Miner → Analyzer → Visualizer</p>
+      <p class="meta">Generado: <strong>{{ formattedGeneratedAt }}</strong> · Fuente: <code>assets/analysis.json</code></p>
+    </div>
+    <div class="badges">
+      <span class="badge">Syft</span>
+      <span class="badge">Grype</span>
+      <span class="badge">CodeQL</span>
+      <span class="badge">CI/CD</span>
+    </div>
   </header>
 
   @if (loading) {
-    <section class="state loading">Cargando análisis...</section>
+    <section class="state loading panel">Cargando análisis...</section>
   } @else if (error) {
-    <section class="state error">{{ error }}</section>
+    <section class="state error panel">{{ error }}</section>
   } @else if (isEmpty) {
-    <section class="state empty">No hay datos de análisis disponibles.</section>
+    <section class="state empty panel">No hay datos de análisis disponibles.</section>
   } @else {
     <app-executive-insights [insights]="executiveInsights"></app-executive-insights>
     <app-kpi-cards [cards]="kpis"></app-kpi-cards>
