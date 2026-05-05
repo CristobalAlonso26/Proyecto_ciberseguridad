@@ -48,6 +48,10 @@ services:
       bash -c "
         echo 'Generating analysis.json...' &&
         uv run python -m analyzer.generate_analysis &&
+        echo 'Executing notebooks...' &&
+        uv run jupyter nbconvert --to notebook --execute --inplace nbs/01_overview.ipynb &&
+        uv run jupyter nbconvert --to notebook --execute --inplace nbs/02_vulnerability_patterns.ipynb &&
+        uv run jupyter nbconvert --to notebook --execute --inplace nbs/03_repository_risk_and_conclusions.ipynb &&
         echo 'Starting Jupyter Lab...' &&
         jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root --NotebookApp.token='' --notebook-dir=/workspace
       "

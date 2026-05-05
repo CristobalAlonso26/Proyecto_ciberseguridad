@@ -103,10 +103,11 @@ uv run python analyzer/generate_analysis.py
 
 ```bash
 docker compose run --rm miner
-docker compose up analyzer       # Jupyter Lab en http://localhost:8888
+docker compose up analyzer       # Jupyter Lab en http://localhost:8888 (notebooks pre-ejecutados)
 docker compose up visualizer     # Dashboard en http://localhost:4200
 ```
 
+> Al iniciar, el servicio `analyzer` genera `analysis.json` y ejecuta los 3 notebooks (`nbconvert --execute`) para que estén listos con outputs al abrir Jupyter Lab. Esto aumenta el tiempo de inicio pero evita tener que ejecutar las celdas manualmente.
 > El servicio `visualizer` sincroniza automáticamente `analysis.json` en cada arranque hacia `src/assets/`. No es necesario ejecutar el script manualmente cuando usas Docker Compose.
 
 ## Estructura
