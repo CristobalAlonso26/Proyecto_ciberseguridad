@@ -8,28 +8,61 @@ Pipeline E2E para análisis de seguridad de repositorios:
 - **Analyzer**: consolida resultados y genera `data/results/analysis.json` (incluye SBOM, vulnerabilidades, CodeQL y CI/CD).
 - **Visualizer**: dashboard Angular que consume `analysis.json` desde `visualizer/src/assets/analysis.json`.
 
-## Requisitos
+## Inicio rápido
+
+### Opción 1: Docker Compose (recomendado)
+
+```bash
+cp .env.example .env
+# Editar .env y poner tu GITHUB_TOKEN
+
+docker compose run --rm miner
+docker compose up analyzer       # Jupyter Lab en http://localhost:8888 (notebooks pre-ejecutados)
+docker compose up visualizer     # Dashboard en http://localhost:4200
+```
+
+> Al iniciar, el servicio `analyzer` genera `analysis.json` y ejecuta los 3 notebooks (`nbconvert --execute`) para que estén listos con outputs al abrir Jupyter Lab. Esto aumenta el tiempo de inicio pero evita tener que ejecutar las celdas manualmente.
+> El servicio `visualizer` sincroniza automáticamente `analysis.json` en cada arranque hacia `src/assets/`.
+### Opción 2: Dev Container
+
+Abre el proyecto en VS Code y ejecuta `Dev Containers: Reopen in Container`. Esto instala CodeQL, Syft y Grype automáticamente.
+
+```bash
+cp .env.example .env
+# Editar .env y poner tu GITHUB_TOKEN
+
+# Dentro del contenedor
+uv sync
+uv run python -m miner
+uv run python analyzer/generate_analysis.py
+./scripts/prepare_visualizer_data.sh
+cd visualizer && npm install && npm run start
+```
+
+### Opción 3: Ejecución local
+
+#### Requisitos
 
 - **Python 3.11+**
-- **Git**, **Syft**, **Grype**, **CodeQL CLI** instalados en el PATH (o usar Dev Container)
+- **Git**, **Syft**, **Grype**, **CodeQL CLI** instalados en el PATH
 - **GitHub Personal Access Token** con scopes `public_repo` y `read:org`
 
-## Inicio rápido (flujo E2E)
+#### Pasos
 
-### 1. Configurar
+**1. Configurar**
 
 ```bash
 cp .env.example .env
 # Editar .env y poner tu GITHUB_TOKEN
 ```
 
-### 2. Instalar dependencias
+**2. Instalar dependencias**
 
 ```bash
 uv sync
 ```
 
-### 3. Ejecutar Miner
+**3. Ejecutar Miner**
 
 ```bash
 # Probar sin clonar (solo lista repos)
@@ -41,7 +74,7 @@ uv run python -m miner
 
 Los resultados se guardan en `data/results/` y `data/reports/`.
 
-### 4. Ejecutar Analyzer
+**4. Ejecutar Analyzer**
 
 ```bash
 uv run python analyzer/generate_analysis.py
@@ -60,7 +93,7 @@ jq '.metadata' data/results/analysis.json
 jq '.cross_repo_analysis' data/results/analysis.json
 ```
 
-### 5. Ejecutar Visualizer
+**5. Ejecutar Visualizer**
 
 ```bash
 cd visualizer
@@ -87,28 +120,6 @@ El dashboard queda disponible en `http://localhost:4200/`.
 | `--dry-run` | Solo listar repos | — |
 | `--output-json PATH` | Guardar resumen en JSON | — |
 | `-v` | Logging DEBUG | — |
-
-## Usar con Dev Container
-
-Si no quieres instalar las herramientas manualmente, abre el proyecto en VS Code y ejecuta `Dev Containers: Reopen in Container`. Esto instala CodeQL, Syft y Grype automáticamente.
-
-```bash
-# Dentro del contenedor
-uv sync
-uv run python -m miner
-uv run python analyzer/generate_analysis.py
-```
-
-## Usar con Docker Compose
-
-```bash
-docker compose run --rm miner
-docker compose up analyzer       # Jupyter Lab en http://localhost:8888 (notebooks pre-ejecutados)
-docker compose up visualizer     # Dashboard en http://localhost:4200
-```
-
-> Al iniciar, el servicio `analyzer` genera `analysis.json` y ejecuta los 3 notebooks (`nbconvert --execute`) para que estén listos con outputs al abrir Jupyter Lab. Esto aumenta el tiempo de inicio pero evita tener que ejecutar las celdas manualmente.
-> El servicio `visualizer` sincroniza automáticamente `analysis.json` en cada arranque hacia `src/assets/`. No es necesario ejecutar el script manualmente cuando usas Docker Compose.
 
 ## Estructura
 
