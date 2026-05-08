@@ -1,5 +1,7 @@
 # Security Vulnerability Analysis Pipeline
 
+Leonardo Castellón - Cristobal Ramos
+
 Pipeline E2E para análisis de seguridad de repositorios:
 
 **Miner → Analyzer → Visualizer**
@@ -10,28 +12,56 @@ Pipeline E2E para análisis de seguridad de repositorios:
 
 ## Inicio rápido
 
+> El flujo E2E se ejecuta **por etapas secuenciales**: **Miner → Analyzer → Visualizer**.
+
 ### Opción 1: Docker Compose (recomendado)
 
+**1) Configurar entorno**
+
 ```bash
 cp .env.example .env
 # Editar .env y poner tu GITHUB_TOKEN
-
-docker compose run --rm miner
-docker compose up analyzer       # Jupyter Lab en http://localhost:8888 (notebooks pre-ejecutados)
-docker compose up visualizer     # Dashboard en http://localhost:4200
 ```
 
-> Al iniciar, el servicio `analyzer` genera `analysis.json` y ejecuta los 3 notebooks (`nbconvert --execute`) para que estén listos con outputs al abrir Jupyter Lab. Esto aumenta el tiempo de inicio pero evita tener que ejecutar las celdas manualmente.
-> El servicio `visualizer` sincroniza automáticamente `analysis.json` en cada arranque hacia `src/assets/`.
+**2) Ejecutar Miner (genera datos crudos)**
+
+```bash
+docker compose run --rm miner
+```
+
+**3) Ejecutar Analyzer (genera `analysis.json`)**
+
+```bash
+docker compose up analyzer
+```
+
+**4) Ejecutar Visualizer (consume `analysis.json`)**
+
+```bash
+docker compose up visualizer
+```
+
+**5) Validación mínima**
+
+```bash
+jq '.metadata' data/results/analysis.json
+jq '.repositories | length' data/results/analysis.json
+```
+
+Notas:
+- Al iniciar, el servicio `analyzer` genera `analysis.json` y ejecuta los 3 notebooks (`nbconvert --execute`) para dejarlos con outputs listos.
+- El servicio `visualizer` sincroniza automáticamente `analysis.json` hacia `visualizer/src/assets/` en cada arranque.
+
 ### Opción 2: Dev Container
 
-Abre el proyecto en VS Code y ejecuta `Dev Containers: Reopen in Container`. Esto instala CodeQL, Syft y Grype automáticamente.
+Abre el proyecto en VS Code y ejecuta `Dev Containers: Reopen in Container`.
+
+**Dentro del contenedor, ejecutar secuencialmente:**
 
 ```bash
 cp .env.example .env
 # Editar .env y poner tu GITHUB_TOKEN
 
-# Dentro del contenedor
 uv sync
 uv run python -m miner
 uv run python analyzer/generate_analysis.py
@@ -62,7 +92,7 @@ cp .env.example .env
 uv sync
 ```
 
-**3. Ejecutar Miner**
+**3. Ejecutar Miner (datos crudos)**
 
 ```bash
 # Probar sin clonar (solo lista repos)
@@ -74,7 +104,7 @@ uv run python -m miner
 
 Los resultados se guardan en `data/results/` y `data/reports/`.
 
-**4. Ejecutar Analyzer**
+**4. Ejecutar Analyzer (consolidación)**
 
 ```bash
 uv run python analyzer/generate_analysis.py
@@ -93,9 +123,10 @@ jq '.metadata' data/results/analysis.json
 jq '.cross_repo_analysis' data/results/analysis.json
 ```
 
-**5. Ejecutar Visualizer**
+**5. Preparar y ejecutar Visualizer**
 
 ```bash
+./scripts/prepare_visualizer_data.sh
 cd visualizer
 npm install
 npm run start
