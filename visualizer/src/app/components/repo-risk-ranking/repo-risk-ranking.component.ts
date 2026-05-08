@@ -25,13 +25,13 @@ export class RepoRiskRankingComponent {
   }
 
   getBadge(score: number): RiskBadge {
-    if (score < 2.5) {
-      return { label: 'Riesgo Controlado', color: '#22c55e', bg: 'rgba(34, 197, 94, 0.12)' };
+    if (score <= 2.5) {
+      return { label: 'Prioridad Baja', color: '#22c55e', bg: 'rgba(34, 197, 94, 0.12)' };
     }
-    if (score <= 3.75) {
-      return { label: 'Atencion Requerida', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.12)' };
+    if (score <= 5.5) {
+      return { label: 'Prioridad Media', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.12)' };
     }
-    return { label: 'Intervencion Inmediata', color: '#ef4444', bg: 'rgba(239, 68, 68, 0.12)' };
+    return { label: 'Prioridad Alta', color: '#ef4444', bg: 'rgba(239, 68, 68, 0.12)' };
   }
 
   get visibleRanking() {

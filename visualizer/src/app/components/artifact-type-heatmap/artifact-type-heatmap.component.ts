@@ -12,6 +12,9 @@ import { RepositoryAnalysis } from '../../models/analysis.model';
 export class ArtifactTypeHeatmapComponent {
   @Input() repositories: RepositoryAnalysis[] = [];
 
+  readonly defaultLimit = 10;
+  showAll = false;
+
   get columns(): string[] {
     return Array.from(
       new Set(
@@ -36,5 +39,17 @@ export class ArtifactTypeHeatmapComponent {
     if (!this.maxValue) return 'rgba(15, 23, 42, 0.4)';
     const alpha = 0.18 + (value / this.maxValue) * 0.72;
     return `rgba(34, 211, 238, ${alpha.toFixed(2)})`;
+  }
+
+  get visibleRepos() {
+    return this.showAll ? this.repositories : this.repositories.slice(0, this.defaultLimit);
+  }
+
+  get hasMore() {
+    return this.repositories.length > this.defaultLimit;
+  }
+
+  toggle(): void {
+    this.showAll = !this.showAll;
   }
 }

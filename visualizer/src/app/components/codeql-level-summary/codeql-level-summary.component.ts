@@ -12,6 +12,9 @@ import { RepositoryAnalysis } from '../../models/analysis.model';
 export class CodeqlLevelSummaryComponent {
   @Input() repositories: RepositoryAnalysis[] = [];
 
+  readonly defaultLimit = 10;
+  showAll = false;
+
   get levels(): string[] {
     const detected = new Set<string>();
     this.repositories.forEach((repo) => {
@@ -37,5 +40,17 @@ export class CodeqlLevelSummaryComponent {
     const max = this.maxValue();
     if (!max) return 0.1;
     return 0.15 + (value / max) * 0.75;
+  }
+
+  get visibleRepos() {
+    return this.showAll ? this.repositories : this.repositories.slice(0, this.defaultLimit);
+  }
+
+  get hasMore() {
+    return this.repositories.length > this.defaultLimit;
+  }
+
+  toggle(): void {
+    this.showAll = !this.showAll;
   }
 }

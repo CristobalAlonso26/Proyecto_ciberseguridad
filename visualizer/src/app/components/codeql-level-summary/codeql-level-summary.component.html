@@ -15,7 +15,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (repo of repositories; track repo.name) {
+          @for (repo of visibleRepos; track repo.name) {
             <tr>
               <td class="repo">{{ repo.name }}</td>
               @for (level of levels; track level) {
@@ -27,5 +27,10 @@
         </tbody>
       </table>
     </div>
+    @if (hasMore) {
+      <button type="button" class="toggle-btn" (click)="toggle()">
+        {{ showAll ? 'Mostrar menos' : 'Mostrar todos (' + repositories.length + ')' }}
+      </button>
+    }
   }
 </section>

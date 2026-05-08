@@ -19,7 +19,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (repo of repositories; track repo.name) {
+          @for (repo of visibleRows; track repo.name) {
             <tr>
               <td><span class="repo-chip">{{ repo.name }}</span></td>
               <td>{{ repo.vulnerabilities.total }}</td>
@@ -29,5 +29,10 @@
         </tbody>
       </table>
     </div>
+    @if (hasMore) {
+      <button type="button" class="toggle-btn" (click)="toggle()">
+        {{ showAll ? 'Mostrar menos' : 'Mostrar todos (' + repositories.length + ')' }}
+      </button>
+    }
   }
 </section>

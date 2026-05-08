@@ -13,6 +13,9 @@ import { RepositoryAnalysis } from '../../models/analysis.model';
 export class RepoComparisonChartComponent implements OnChanges {
   @Input() repositories: RepositoryAnalysis[] = [];
 
+  readonly defaultLimit = 15;
+  showAll = false;
+
   chartData: ChartConfiguration<'bar'>['data'] = { labels: [], datasets: [] };
 
   readonly chartOptions: ChartConfiguration<'bar'>['options'] = {
@@ -27,6 +30,18 @@ export class RepoComparisonChartComponent implements OnChanges {
       tooltip: { mode: 'index', intersect: false },
     },
   };
+
+  get visibleRows() {
+    return this.showAll ? this.repositories : this.repositories.slice(0, this.defaultLimit);
+  }
+
+  get hasMore() {
+    return this.repositories.length > this.defaultLimit;
+  }
+
+  toggle(): void {
+    this.showAll = !this.showAll;
+  }
 
   ngOnChanges(): void {
     this.chartData = {

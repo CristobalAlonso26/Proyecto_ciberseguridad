@@ -15,7 +15,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (item of rows; track item.repository + item.workflow + item.issue) {
+          @for (item of visibleRows; track item.repository + item.workflow + item.issue) {
             <tr>
               <td><span class="repo-chip">{{ item.repository }}</span></td>
               <td><span class="workflow-chip">{{ item.workflow }}</span></td>
@@ -25,5 +25,10 @@
         </tbody>
       </table>
     </div>
+    @if (hasMore) {
+      <button type="button" class="toggle-btn" (click)="toggle()">
+        {{ showAll ? 'Mostrar menos' : 'Mostrar todos (' + rows.length + ')' }}
+      </button>
+    }
   }
 </section>

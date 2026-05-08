@@ -51,8 +51,8 @@
           </tr>
         </thead>
         <tbody>
-          @for (item of pagedRows; track item.repository + item.id + item.location) {
-            <tr>
+          @for (item of pagedRows; track item.repository + item.id + item.location + $index) {
+            <tr class="vuln-row" [class.selected]="selectedVulnerability === item" (click)="selectVulnerability(item)">
               <td><span class="repo-chip">{{ item.repository }}</span></td>
               <td [title]="item.id"><code>{{ truncate(item.id, 24) }}</code></td>
               <td><span class="sev" [class]="'sev ' + severityClass(item.severity)">{{ item.severity }}</span></td>
@@ -77,5 +77,79 @@
         <button type="button" [disabled]="currentPage === totalPages" (click)="nextPage()">›</button>
       </nav>
     }
+  }
+
+  @if (selectedVulnerability) {
+    <div class="detail-overlay" (click)="selectVulnerability(selectedVulnerability)">
+      <div class="detail-panel" (click)="$event.stopPropagation()">
+        <button class="detail-close" (click)="selectVulnerability(selectedVulnerability)" aria-label="Cerrar">&times;</button>
+
+        <div class="detail-header">
+          <span class="detail-sev-badge" [class]="'sev-badge ' + severityClass(selectedVulnerability.severity)">
+            {{ selectedVulnerability.severity }}
+          </span>
+          <h4 class="detail-id">{{ selectedVulnerability.id }}</h4>
+        </div>
+
+        <div class="detail-section">
+          <h5>Descripción</h5>
+          <p class="detail-description">
+            {{ selectedVulnerability.description || 'Sin descripción disponible.' }}
+          </p>
+        </div>
+
+        <div class="detail-grid">
+          <div class="detail-field">
+            <span class="detail-label">Repositorio</span>
+            <span class="detail-value">{{ selectedVulnerability.repository }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-label">Artifact</span>
+            <span class="detail-value">{{ selectedVulnerability.artifact }} <span class="detail-version">v{{ selectedVulnerability.artifact_version }}</span></span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-label">Tipo</span>
+            <span class="detail-value">{{ selectedVulnerability.artifact_type || '-' }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-label">Lenguaje</span>
+            <span class="detail-value">{{ selectedVulnerability.artifact_language || '-' }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-label">CWE</span>
+            <span class="detail-value">{{ selectedVulnerability.cwe || '-' }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-label">CVSS</span>
+            <span class="detail-value">{{ selectedVulnerability.cvss_score != null ? selectedVulnerability.cvss_score : '-' }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-label">EPSS</span>
+            <span class="detail-value">{{ selectedVulnerability.epss != null ? (selectedVulnerability.epss * 100).toFixed(2) + '%' : '-' }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-label">Fix</span>
+            <span class="detail-value" [class.fix-yes]="selectedVulnerability.fix_available" [class.fix-no]="!selectedVulnerability.fix_available">
+              {{ selectedVulnerability.fix_available ? 'Disponible' : 'No disponible' }}
+            </span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-label">Versión Fix</span>
+            <span class="detail-value">{{ selectedVulnerability.fix_version || '-' }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-label">Ubicación</span>
+            <span class="detail-value detail-location">{{ selectedVulnerability.location || '-' }}</span>
+          </div>
+        </div>
+
+        @if (getRemediation(selectedVulnerability)) {
+          <div class="detail-remediation">
+            <h5>Remediación</h5>
+            <code>{{ getRemediation(selectedVulnerability) }}</code>
+          </div>
+        }
+      </div>
+    </div>
   }
 </section>

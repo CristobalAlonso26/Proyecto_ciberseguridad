@@ -16,6 +16,8 @@ export class VulnerabilitiesTableComponent {
   selectedSeverity = 'all';
   search = '';
 
+  selectedVulnerability: VulnerabilityRow | null = null;
+
   readonly pageSize = 25;
   currentPage = 1;
 
@@ -77,6 +79,15 @@ export class VulnerabilitiesTableComponent {
 
   onFilterChange(): void {
     this.currentPage = 1;
+    this.selectedVulnerability = null;
+  }
+
+  selectVulnerability(vuln: VulnerabilityRow): void {
+    if (this.selectedVulnerability === vuln) {
+      this.selectedVulnerability = null;
+    } else {
+      this.selectedVulnerability = vuln;
+    }
   }
 
   severityClass(severity: string): string {
@@ -86,5 +97,12 @@ export class VulnerabilitiesTableComponent {
   truncate(value: string | undefined, size = 28): string {
     if (!value) return '-';
     return value.length > size ? `${value.slice(0, size)}…` : value;
+  }
+
+  getRemediation(vuln: VulnerabilityRow): string | null {
+    if (vuln.fix_available && vuln.artifact && vuln.fix_version) {
+      return `Actualizar ${vuln.artifact} a la versión ${vuln.fix_version}`;
+    }
+    return null;
   }
 }

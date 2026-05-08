@@ -16,8 +16,33 @@
   color: #64748b;
 }
 
+.chart-info {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-bottom: 8px;
+}
+
 .chart-wrap {
   min-height: 320px;
+  overflow-y: auto;
+}
+
+.btn-load-more {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 8px 16px;
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+  border: 1px solid #3b82f6;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-load-more:hover {
+  background: rgba(59, 130, 246, 0.3);
 }
 
 .empty {

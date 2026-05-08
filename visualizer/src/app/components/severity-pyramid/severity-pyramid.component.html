@@ -1,13 +1,23 @@
 <section class="panel">
   <h3>Pirámide de severidad por repositorio</h3>
   <p class="subtitle">Distribución apilada Critical/High/Medium/Low por repo.</p>
-  <p class="footnote">Solo vulnerabilidades detectadas por Grype.</p>
+  <p class="footnote">Solo vulnerabilidades detectadas por Grype. Ordenado por risk_score.</p>
 
   @if (!repositories.length) {
     <p class="empty">No hay repositorios para mostrar.</p>
+  } @else if (!chartData.labels?.length) {
+    <p class="empty">No hay vulnerabilidades para mostrar.</p>
   } @else {
-    <div class="chart-wrap">
+    <div class="chart-info">
+      Mostrando {{ displayCount }} de {{ totalCount }} repos.
+    </div>
+    <div class="chart-wrap" [style.height]="chartHeight">
       <canvas baseChart [type]="'bar'" [data]="chartData" [options]="chartOptions"></canvas>
     </div>
+    @if (hasMore) {
+      <button class="btn-load-more" (click)="loadMore()">
+        Mostrar todos los repositorios ({{ remainingCount }} restantes)
+      </button>
+    }
   }
 </section>
