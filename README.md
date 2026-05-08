@@ -2,6 +2,9 @@
 
 Leonardo Castellón - Cristobal Ramos
 
+<img width="1304" height="1600" alt="Poster" src="https://github.com/user-attachments/assets/9eae044e-8aa3-4294-8938-f8fa2560db42" />
+
+
 Pipeline E2E para análisis de seguridad de repositorios:
 
 **Miner → Analyzer → Visualizer**
